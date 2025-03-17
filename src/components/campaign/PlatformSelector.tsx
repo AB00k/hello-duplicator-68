@@ -2,7 +2,6 @@
 import React from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 interface PlatformSelectorProps {
   selectedPlatforms: string[];

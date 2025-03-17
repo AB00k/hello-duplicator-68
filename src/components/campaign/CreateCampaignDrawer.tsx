@@ -173,7 +173,9 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
                       <p><span className="font-medium">Start Date:</span> {campaignData.startDate.toLocaleDateString()}</p>
                       <p><span className="font-medium">End Date:</span> {
                         new Date(new Date(campaignData.startDate).setDate(
-                          campaignData.startDate.getDate() + Number(campaignData.duration)
+                          campaignData.startDate.getDate() + (typeof campaignData.duration === 'string' 
+                            ? 30 
+                            : Number(campaignData.duration))
                         )).toLocaleDateString()
                       }</p>
                     </div>
