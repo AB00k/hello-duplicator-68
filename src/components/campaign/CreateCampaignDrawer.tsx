@@ -136,6 +136,7 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
               <PlatformSelector 
                 selectedPlatforms={selectedPlatforms} 
                 onChange={handlePlatformSelection}
+                onNext={handleNext} // Pass the handleNext function to PlatformSelector
               />
             )}
 
