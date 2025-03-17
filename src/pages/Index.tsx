@@ -4,9 +4,11 @@ import { PlusCircle, Tag, DollarSign, ShoppingCart, Percent, Users, BarChart } f
 import TabNavigation from '@/components/TabNavigation';
 import MetricCard from '@/components/MetricCard';
 import { Button } from '@/components/ui/button';
+import CreateCampaignDrawer from '@/components/campaign/CreateCampaignDrawer';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('summary');
+  const [isCreateCampaignOpen, setIsCreateCampaignOpen] = useState(false);
   
   const tabs = [
     { id: 'summary', label: 'Summary' },
@@ -27,6 +29,7 @@ const Index = () => {
           
           <Button 
             className="bg-marketing-red hover:bg-marketing-red/90 flex items-center gap-2 rounded-full text-white shadow-lg hover:shadow-xl transition-all"
+            onClick={() => setIsCreateCampaignOpen(true)}
           >
             <PlusCircle className="w-5 h-5" />
             Create a new campaign
@@ -117,6 +120,12 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Campaign Creation Drawer */}
+      <CreateCampaignDrawer 
+        isOpen={isCreateCampaignOpen} 
+        onClose={() => setIsCreateCampaignOpen(false)} 
+      />
     </div>
   );
 };
