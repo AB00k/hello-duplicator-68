@@ -1,13 +1,20 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 interface CampaignPreviewProps {
   selectedPlatforms: string[];
 }
 
 const CampaignPreview = ({ selectedPlatforms }: CampaignPreviewProps) => {
+  const [salesFilter, setSalesFilter] = useState<string>("all");
+  const [showHeatmap, setShowHeatmap] = useState(true);
+  const [showAreaSales, setShowAreaSales] = useState(true);
+  
   // Mock data for the heatmap
   const generateMockHeatmapData = () => {
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -44,11 +51,20 @@ const CampaignPreview = ({ selectedPlatforms }: CampaignPreviewProps) => {
     return areas.map(area => ({
       name: area,
       sales: Math.floor(Math.random() * 5000) + 1000
-    }));
+    })).sort((a, b) => b.sales - a.sales);
   };
 
   const heatmapData = generateMockHeatmapData();
   const areaSalesData = generateAreaSalesData();
+
+  // Filter area sales based on selected filter
+  const filteredAreaSales = areaSalesData.filter(area => {
+    if (salesFilter === "all") return true;
+    if (salesFilter === "high" && area.sales > 3000) return true;
+    if (salesFilter === "medium" && area.sales >= 2000 && area.sales <= 3000) return true;
+    if (salesFilter === "low" && area.sales < 2000) return true;
+    return false;
+  });
 
   // Colors for the heatmap based on value
   const getHeatmapColor = (value) => {
@@ -59,6 +75,15 @@ const CampaignPreview = ({ selectedPlatforms }: CampaignPreviewProps) => {
     return '#22c55e'; // Low traffic (green)
   };
 
+  // Filter heatmap cells based on selected filter
+  const shouldShowHeatmapCell = (value) => {
+    if (salesFilter === "all") return true;
+    if (salesFilter === "high" && value >= 70) return true;
+    if (salesFilter === "medium" && value >= 40 && value < 70) return true;
+    if (salesFilter === "low" && value < 40) return true;
+    return false;
+  };
+
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold">Campaign Performance Preview</h3>
@@ -67,78 +92,114 @@ const CampaignPreview = ({ selectedPlatforms }: CampaignPreviewProps) => {
       </p>
 
       <div className="space-y-4">
-        <h4 className="text-base font-medium">Sales By Hour & Day (Heat Map)</h4>
-        <div className="overflow-x-auto pb-2">
-          <div className="min-w-[700px]">
-            <div className="grid grid-cols-[100px_repeat(24,minmax(40px,1fr))]">
-              <div className="font-medium text-center">Day / Hour</div>
-              {Array.from({ length: 24 }, (_, i) => (
-                <div key={i} className="text-xs text-center text-muted-foreground">
-                  {i < 10 ? `0${i}:00` : `${i}:00`}
+        <div className="flex items-center justify-between">
+          <h4 className="text-base font-medium">Filter Sales by Level</h4>
+          <ToggleGroup type="single" value={salesFilter} onValueChange={(value) => value && setSalesFilter(value)}>
+            <ToggleGroupItem value="all" aria-label="All Sales">All</ToggleGroupItem>
+            <ToggleGroupItem value="high" aria-label="High Sales">High</ToggleGroupItem>
+            <ToggleGroupItem value="medium" aria-label="Medium Sales">Medium</ToggleGroupItem>
+            <ToggleGroupItem value="low" aria-label="Low Sales">Low</ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Switch id="show-heatmap" checked={showHeatmap} onCheckedChange={setShowHeatmap} />
+          <Label htmlFor="show-heatmap">Show Sales Heatmap</Label>
+        </div>
+
+        {showHeatmap && (
+          <div className="space-y-2">
+            <h4 className="text-base font-medium">Sales By Hour & Day</h4>
+            <div className="overflow-x-auto pb-2">
+              <div className="min-w-[700px]">
+                <div className="grid grid-cols-[100px_repeat(24,minmax(40px,1fr))]">
+                  <div className="font-medium text-center">Day / Hour</div>
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <div key={i} className="text-xs text-center text-muted-foreground">
+                      {i < 10 ? `0${i}:00` : `${i}:00`}
+                    </div>
+                  ))}
+                  
+                  {heatmapData.map((dayData) => (
+                    <React.Fragment key={dayData.day}>
+                      <div className="font-medium text-center my-1">{dayData.day}</div>
+                      {Array.from({ length: 24 }, (_, i) => {
+                        const time = i < 10 ? `0${i}:00` : `${i}:00`;
+                        const value = dayData[time];
+                        const showCell = shouldShowHeatmapCell(value);
+                        
+                        return (
+                          <div 
+                            key={`${dayData.day}-${time}`}
+                            className={`mx-0.5 my-1 rounded-sm text-xs flex items-center justify-center ${showCell ? 'text-white font-medium' : 'text-transparent'}`}
+                            style={{ 
+                              backgroundColor: showCell ? getHeatmapColor(value) : '#f3f4f6',
+                              height: '32px',
+                              opacity: showCell ? (0.1 + (value / 150) * 0.9) : 0.1 // Adjust opacity based on value
+                            }}
+                          >
+                            {showCell ? value : ''}
+                          </div>
+                        );
+                      })}
+                    </React.Fragment>
+                  ))}
                 </div>
-              ))}
-              
-              {heatmapData.map((dayData) => (
-                <React.Fragment key={dayData.day}>
-                  <div className="font-medium text-center my-1">{dayData.day}</div>
-                  {Array.from({ length: 24 }, (_, i) => {
-                    const time = i < 10 ? `0${i}:00` : `${i}:00`;
-                    const value = dayData[time];
-                    return (
-                      <div 
-                        key={`${dayData.day}-${time}`}
-                        className="mx-0.5 my-1 rounded-sm text-xs flex items-center justify-center text-white font-medium"
-                        style={{ 
-                          backgroundColor: getHeatmapColor(value),
-                          height: '32px',
-                          opacity: 0.1 + (value / 150) * 0.9 // Adjust opacity based on value
-                        }}
-                      >
-                        {value}
-                      </div>
-                    );
-                  })}
-                </React.Fragment>
-              ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {selectedPlatforms.includes('Talabat') && (
         <div className="space-y-4 mt-8">
-          <h4 className="text-base font-medium">Sales By Area</h4>
-          <ChartContainer 
-            config={{
-              sales: {
-                color: "#ef4444"
-              }
-            }}
-            className="h-64"
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={areaSalesData}>
-                <XAxis 
-                  dataKey="name" 
-                  tick={{ fontSize: 12 }} 
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis 
-                  tick={{ fontSize: 12 }} 
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value) => `AED ${value}`}
-                />
-                <Tooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="sales" name="Sales" fill="#ef4444" radius={[4, 4, 0, 0]}>
-                  {areaSalesData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill="#ef4444" />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
+          <div className="flex items-center space-x-2">
+            <Switch id="show-area-sales" checked={showAreaSales} onCheckedChange={setShowAreaSales} />
+            <Label htmlFor="show-area-sales">Show Area Sales</Label>
+          </div>
+          
+          {showAreaSales && (
+            <div className="space-y-2">
+              <h4 className="text-base font-medium">Sales By Area</h4>
+              <p className="text-sm text-muted-foreground">
+                {salesFilter === "high" && "Showing high sales areas (> 3000 AED)"}
+                {salesFilter === "medium" && "Showing medium sales areas (2000-3000 AED)"}
+                {salesFilter === "low" && "Showing low sales areas (< 2000 AED)"}
+                {salesFilter === "all" && "Showing all areas"}
+              </p>
+              <ChartContainer 
+                config={{
+                  sales: {
+                    color: "#ef4444"
+                  }
+                }}
+                className="h-64"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={filteredAreaSales}>
+                    <XAxis 
+                      dataKey="name" 
+                      tick={{ fontSize: 12 }} 
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <YAxis 
+                      tick={{ fontSize: 12 }} 
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(value) => `AED ${value}`}
+                    />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Bar dataKey="sales" name="Sales" fill="#ef4444" radius={[4, 4, 0, 0]}>
+                      {filteredAreaSales.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill="#ef4444" />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+          )}
         </div>
       )}
     </div>

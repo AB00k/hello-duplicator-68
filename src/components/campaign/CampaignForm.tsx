@@ -65,7 +65,7 @@ const CampaignForm = ({ selectedPlatforms, campaignData, onChange }: CampaignFor
             <SelectTrigger id="account">
               <SelectValue placeholder="Select Account" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-50 bg-white">
               {accountOptions.map(account => (
                 <SelectItem key={account} value={account}>{account}</SelectItem>
               ))}
@@ -82,7 +82,7 @@ const CampaignForm = ({ selectedPlatforms, campaignData, onChange }: CampaignFor
             <SelectTrigger id="brand">
               <SelectValue placeholder="Select Brand" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-50 bg-white">
               {brandOptions.map(brand => (
                 <SelectItem key={brand} value={brand}>{brand}</SelectItem>
               ))}
@@ -99,7 +99,7 @@ const CampaignForm = ({ selectedPlatforms, campaignData, onChange }: CampaignFor
             <SelectTrigger id="outlet">
               <SelectValue placeholder="Select Outlet" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-50 bg-white">
               {outletOptions.map(outlet => (
                 <SelectItem key={outlet} value={outlet}>{outlet}</SelectItem>
               ))}
@@ -148,18 +148,29 @@ const CampaignForm = ({ selectedPlatforms, campaignData, onChange }: CampaignFor
         </div>
 
         <div>
-          <Label htmlFor="duration">Duration (Days)</Label>
+          <Label htmlFor="duration">Duration</Label>
           <Select
-            value={campaignData.duration.toString()}
-            onValueChange={(value) => handleChange('duration', Number(value))}
+            value={campaignData.duration === 'custom' ? 'custom' : campaignData.duration.toString()}
+            onValueChange={(value) => {
+              if (value === 'custom') {
+                handleChange('duration', 'custom');
+                // Set default end date to 30 days from start date if custom is selected
+                const endDate = new Date(campaignData.startDate);
+                endDate.setDate(endDate.getDate() + 30);
+                handleChange('endDate', endDate);
+              } else {
+                handleChange('duration', Number(value));
+              }
+            }}
           >
             <SelectTrigger id="duration">
               <SelectValue placeholder="Select Duration" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-50 bg-white">
               {[1, 3, 7, 14, 30].map(day => (
                 <SelectItem key={day} value={day.toString()}>{day} day{day > 1 ? 's' : ''}</SelectItem>
               ))}
+              <SelectItem value="custom">Custom</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -180,11 +191,22 @@ const CampaignForm = ({ selectedPlatforms, campaignData, onChange }: CampaignFor
                 {campaignData.startDate ? format(campaignData.startDate, "PPP") : <span>Pick a date</span>}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 z-50 bg-white" align="start">
               <Calendar
                 mode="single"
                 selected={campaignData.startDate}
-                onSelect={(date) => handleChange('startDate', date || new Date())}
+                onSelect={(date) => {
+                  const newDate = date || new Date();
+                  handleChange('startDate', newDate);
+                  
+                  // If custom duration, update end date to maintain the same duration
+                  if (campaignData.duration === 'custom' && campaignData.endDate) {
+                    const currentDuration = Math.floor((campaignData.endDate - campaignData.startDate) / (1000 * 60 * 60 * 24));
+                    const newEndDate = new Date(newDate);
+                    newEndDate.setDate(newEndDate.getDate() + currentDuration);
+                    handleChange('endDate', newEndDate);
+                  }
+                }}
                 initialFocus
                 disabled={(date) => date < new Date()}
                 className="p-3 pointer-events-auto"
@@ -192,6 +214,37 @@ const CampaignForm = ({ selectedPlatforms, campaignData, onChange }: CampaignFor
             </PopoverContent>
           </Popover>
         </div>
+
+        {campaignData.duration === 'custom' && (
+          <div>
+            <Label htmlFor="endDate">End Date</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="endDate"
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !campaignData.endDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {campaignData.endDate ? format(campaignData.endDate, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 z-50 bg-white" align="start">
+                <Calendar
+                  mode="single"
+                  selected={campaignData.endDate}
+                  onSelect={(date) => handleChange('endDate', date || new Date())}
+                  initialFocus
+                  disabled={(date) => date <= new Date(campaignData.startDate)}
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        )}
       </div>
 
       {/* Talabat-specific */}

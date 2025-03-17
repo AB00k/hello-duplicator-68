@@ -30,6 +30,7 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
     budget: 1000,
     duration: 7,
     startDate: new Date(),
+    endDate: new Date(new Date().setDate(new Date().getDate() + 7)),
     targetAudience: {
       allCustomers: false,
       newCustomers: false,
@@ -41,9 +42,6 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
 
   const handlePlatformSelection = (platforms: string[]) => {
     setSelectedPlatforms(platforms);
-    if (platforms.length > 0) {
-      setCurrentStep(2);
-    }
   };
 
   const handleCampaignDataChange = (data: any) => {
@@ -76,6 +74,7 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
       budget: 1000,
       duration: 7,
       startDate: new Date(),
+      endDate: new Date(new Date().setDate(new Date().getDate() + 7)),
       targetAudience: {
         allCustomers: false,
         newCustomers: false,
@@ -132,7 +131,7 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
         </DrawerHeader>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
-          <div className="space-y-6 border-r pr-4">
+          <div className="space-y-6 md:border-r pr-4">
             {currentStep === 1 && (
               <PlatformSelector 
                 selectedPlatforms={selectedPlatforms} 
@@ -158,8 +157,27 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
                   <p><span className="font-medium">Outlet:</span> {campaignData.outlet}</p>
                   <p><span className="font-medium">Bid per Click:</span> AED {campaignData.bidPerClick.toFixed(2)}</p>
                   <p><span className="font-medium">Budget:</span> AED {campaignData.budget}</p>
-                  <p><span className="font-medium">Duration:</span> {campaignData.duration} days</p>
-                  <p><span className="font-medium">Start Date:</span> {campaignData.startDate.toLocaleDateString()}</p>
+                  
+                  {campaignData.duration === 'custom' ? (
+                    <div>
+                      <p><span className="font-medium">Duration:</span> Custom</p>
+                      <p><span className="font-medium">Start Date:</span> {campaignData.startDate.toLocaleDateString()}</p>
+                      <p><span className="font-medium">End Date:</span> {campaignData.endDate.toLocaleDateString()}</p>
+                      <p><span className="font-medium">Total Days:</span> {
+                        Math.ceil((campaignData.endDate.getTime() - campaignData.startDate.getTime()) / (1000 * 60 * 60 * 24))
+                      }</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p><span className="font-medium">Duration:</span> {campaignData.duration} days</p>
+                      <p><span className="font-medium">Start Date:</span> {campaignData.startDate.toLocaleDateString()}</p>
+                      <p><span className="font-medium">End Date:</span> {
+                        new Date(new Date(campaignData.startDate).setDate(
+                          campaignData.startDate.getDate() + Number(campaignData.duration)
+                        )).toLocaleDateString()
+                      }</p>
+                    </div>
+                  )}
                   
                   {(selectedPlatforms.includes('Talabat') || selectedPlatforms.includes('Deliveroo')) && (
                     <div>
