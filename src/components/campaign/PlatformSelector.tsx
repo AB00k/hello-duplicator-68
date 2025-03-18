@@ -41,14 +41,6 @@ const PlatformSelector = ({
       onChange(selectedPlatforms.filter(p => p !== platformName));
     } else {
       onChange([...selectedPlatforms, platformName]);
-      
-      // If this is the first platform selected, and onNext is provided, navigate to next step
-      if (selectedPlatforms.length === 0 && onNext) {
-        // Add a small delay to allow the state update to complete
-        setTimeout(() => {
-          onNext();
-        }, 100);
-      }
     }
   };
 
@@ -57,13 +49,6 @@ const PlatformSelector = ({
       onChange([]);
     } else {
       onChange(platforms.map(p => p.name));
-      // If platforms are selected and onNext is provided, navigate to next step
-      if (onNext && platforms.length > 0) {
-        // Add a small delay to allow the state update to complete
-        setTimeout(() => {
-          onNext();
-        }, 100);
-      }
     }
   };
 

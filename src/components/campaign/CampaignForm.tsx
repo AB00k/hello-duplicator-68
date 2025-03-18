@@ -128,18 +128,18 @@ const CampaignForm = ({ selectedPlatforms, campaignData, onChange, onNext }: Cam
               <span>0</span>
               <div>
                 <div className="flex space-x-1 items-center justify-center mb-1">
-                  <div className="w-1 h-3 bg-marketing-green"></div>
-                  <div className="w-1 h-4 bg-marketing-green"></div>
-                  <div className="w-1 h-5 bg-marketing-green"></div>
-                  <div className="w-1 h-4 bg-marketing-green"></div>
-                  <div className="w-1 h-3 bg-marketing-green"></div>
+                  <div className="w-1 h-3 bg-purple-500"></div>
+                  <div className="w-1 h-4 bg-purple-500"></div>
+                  <div className="w-1 h-5 bg-purple-500"></div>
+                  <div className="w-1 h-4 bg-purple-500"></div>
+                  <div className="w-1 h-3 bg-purple-500"></div>
                 </div>
                 <span>Commonly Used (2-4 AED)</span>
               </div>
               <span>7</span>
             </div>
-            {/* Highlight the commonly used area */}
-            <div className="absolute h-4 bg-green-100/50 rounded-md" 
+            {/* Highlight the commonly used area with light purple */}
+            <div className="absolute h-4 bg-purple-100 rounded-md" 
               style={{ 
                 left: `${(2/7)*100}%`, 
                 right: `${(1-(4/7))*100}%`, 
