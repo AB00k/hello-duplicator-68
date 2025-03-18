@@ -16,7 +16,7 @@ interface CampaignFormProps {
   selectedPlatforms: string[];
   campaignData: any;
   onChange: (data: any) => void;
-  onNext?: () => void; // Add onNext prop
+  onNext?: () => void;
 }
 
 const accountOptions = ['Account 1', 'Account 2', 'Account 3'];
@@ -27,6 +27,7 @@ const areaOptions = ['Dubai Marina', 'Downtown Dubai', 'JBR', 'Business Bay', 'J
 const CampaignForm = ({ selectedPlatforms, campaignData, onChange, onNext }: CampaignFormProps) => {
   const hasTalabat = selectedPlatforms.includes('Talabat');
   const hasDeliveroo = selectedPlatforms.includes('Deliveroo');
+  const hasNoon = selectedPlatforms.includes('Noon');
 
   const handleChange = (field: string, value: any) => {
     onChange({ [field]: value });
@@ -114,7 +115,7 @@ const CampaignForm = ({ selectedPlatforms, campaignData, onChange, onNext }: Cam
 
         <div className="space-y-2">
           <Label>Bid per Click (AED): {campaignData.bidPerClick.toFixed(2)}</Label>
-          <div className="px-1">
+          <div className="px-1 relative">
             <Slider
               value={[campaignData.bidPerClick]}
               min={0}
@@ -136,6 +137,15 @@ const CampaignForm = ({ selectedPlatforms, campaignData, onChange, onNext }: Cam
                 <span>Commonly Used (2-4 AED)</span>
               </div>
               <span>7</span>
+            </div>
+            {/* Highlight the commonly used area */}
+            <div className="absolute h-4 bg-green-100/50 rounded-md" 
+              style={{ 
+                left: `${(2/7)*100}%`, 
+                right: `${(1-(4/7))*100}%`, 
+                top: "2px",
+                zIndex: -1
+              }}>
             </div>
           </div>
         </div>
@@ -344,18 +354,49 @@ const CampaignForm = ({ selectedPlatforms, campaignData, onChange, onNext }: Cam
         </div>
       )}
 
-      {/* Next button */}
-      {onNext && (
-        <div className="flex justify-end mt-6">
-          <Button 
-            onClick={onNext}
-            disabled={!isFormValid()}
-            className="bg-marketing-red hover:bg-marketing-red/90"
-          >
-            Next
-          </Button>
+      {/* Noon-specific */}
+      {hasNoon && (
+        <div className="space-y-4 pt-4 border-t">
+          <h4 className="text-base font-semibold">Noon Options</h4>
+          
+          <div className="space-y-2">
+            <Label>Target Audience</Label>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="noon-all-customers" 
+                  checked={campaignData.targetAudience.allCustomers}
+                  onCheckedChange={(checked) => 
+                    handleTargetAudienceChange('allCustomers', checked === true)
+                  }
+                />
+                <Label htmlFor="noon-all-customers" className="cursor-pointer">All Customers</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="noon-prime-customers" 
+                  checked={campaignData.targetAudience.noonPrime}
+                  onCheckedChange={(checked) => 
+                    handleTargetAudienceChange('noonPrime', checked === true)
+                  }
+                />
+                <Label htmlFor="noon-prime-customers" className="cursor-pointer">Noon Prime Customers</Label>
+              </div>
+            </div>
+          </div>
         </div>
       )}
+
+      {/* Next button */}
+      <div className="flex justify-end mt-6">
+        <Button 
+          onClick={onNext}
+          disabled={!isFormValid()}
+          className="bg-marketing-red hover:bg-marketing-red/90"
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 };

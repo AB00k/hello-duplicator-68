@@ -35,7 +35,8 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
       allCustomers: false,
       newCustomers: false,
       lapsedCustomers: false,
-      deliverooPlus: false
+      deliverooPlus: false,
+      noonPrime: false
     },
     targetAreas: []
   });
@@ -79,7 +80,8 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
         allCustomers: false,
         newCustomers: false,
         lapsedCustomers: false,
-        deliverooPlus: false
+        deliverooPlus: false,
+        noonPrime: false
       },
       targetAreas: []
     });
@@ -90,6 +92,22 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
     'Campaign Details',
     'Review & Confirm'
   ];
+
+  // Calculate end date based on duration
+  const getEndDate = () => {
+    if (campaignData.duration === 'custom') {
+      return campaignData.endDate;
+    } else {
+      // Convert duration to number to ensure type safety
+      const durationDays = typeof campaignData.duration === 'string' 
+        ? parseInt(campaignData.duration, 10) 
+        : campaignData.duration;
+        
+      const endDate = new Date(campaignData.startDate);
+      endDate.setDate(campaignData.startDate.getDate() + durationDays);
+      return endDate;
+    }
+  };
 
   return (
     <Drawer 
@@ -136,7 +154,7 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
               <PlatformSelector 
                 selectedPlatforms={selectedPlatforms} 
                 onChange={handlePlatformSelection}
-                onNext={handleNext} // Pass the handleNext function to PlatformSelector
+                onNext={handleNext}
               />
             )}
 
@@ -145,7 +163,7 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
                 selectedPlatforms={selectedPlatforms}
                 campaignData={campaignData}
                 onChange={handleCampaignDataChange}
-                onNext={handleNext} // Pass the handleNext function to CampaignForm
+                onNext={handleNext}
               />
             )}
 
@@ -173,15 +191,11 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
                     <div>
                       <p><span className="font-medium">Duration:</span> {campaignData.duration} days</p>
                       <p><span className="font-medium">Start Date:</span> {campaignData.startDate.toLocaleDateString()}</p>
-                      <p><span className="font-medium">End Date:</span> {
-                        new Date(new Date(campaignData.startDate).setDate(
-                          campaignData.startDate.getDate() + Number(campaignData.duration)
-                        )).toLocaleDateString()
-                      }</p>
+                      <p><span className="font-medium">End Date:</span> {getEndDate().toLocaleDateString()}</p>
                     </div>
                   )}
                   
-                  {(selectedPlatforms.includes('Talabat') || selectedPlatforms.includes('Deliveroo')) && (
+                  {(selectedPlatforms.includes('Talabat') || selectedPlatforms.includes('Deliveroo') || selectedPlatforms.includes('Noon')) && (
                     <div>
                       <p className="font-medium">Target Audience:</p>
                       <ul className="list-disc list-inside ml-2">
@@ -189,6 +203,7 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
                         {campaignData.targetAudience.newCustomers && <li>New Customers</li>}
                         {campaignData.targetAudience.lapsedCustomers && <li>Lapsed Customers</li>}
                         {campaignData.targetAudience.deliverooPlus && <li>Deliveroo Plus</li>}
+                        {campaignData.targetAudience.noonPrime && <li>Noon Prime</li>}
                       </ul>
                     </div>
                   )}
