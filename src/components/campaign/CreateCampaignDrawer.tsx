@@ -145,6 +145,7 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
                 selectedPlatforms={selectedPlatforms}
                 campaignData={campaignData}
                 onChange={handleCampaignDataChange}
+                onNext={handleNext} // Pass the handleNext function to CampaignForm
               />
             )}
 
@@ -174,9 +175,7 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
                       <p><span className="font-medium">Start Date:</span> {campaignData.startDate.toLocaleDateString()}</p>
                       <p><span className="font-medium">End Date:</span> {
                         new Date(new Date(campaignData.startDate).setDate(
-                          campaignData.startDate.getDate() + (typeof campaignData.duration === 'string' 
-                            ? 30 
-                            : Number(campaignData.duration))
+                          campaignData.startDate.getDate() + Number(campaignData.duration)
                         )).toLocaleDateString()
                       }</p>
                     </div>
@@ -205,6 +204,21 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
                     </div>
                   )}
                 </div>
+                
+                <div className="mt-8">
+                  <h4 className="text-base font-semibold mb-4">Activate Your Campaign</h4>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Your campaign is ready to be activated. Click the button below to start it immediately, or schedule it for later.
+                  </p>
+                  <div className="flex gap-3">
+                    <Button className="bg-green-600 hover:bg-green-700 text-white">
+                      Activate Now
+                    </Button>
+                    <Button variant="outline">
+                      Schedule For Later
+                    </Button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -225,7 +239,8 @@ const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) =>
             </Button>
             <Button 
               onClick={handleNext} 
-              disabled={currentStep === 1 && selectedPlatforms.length === 0}
+              disabled={(currentStep === 1 && selectedPlatforms.length === 0) || 
+                       (currentStep === 2 && (!campaignData.account || !campaignData.brand || !campaignData.outlet))}
               className="bg-marketing-red hover:bg-marketing-red/90"
             >
               {currentStep < 3 ? 'Next' : 'Create Campaign'}

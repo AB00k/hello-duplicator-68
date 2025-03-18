@@ -5,6 +5,7 @@ import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface CampaignPreviewProps {
   selectedPlatforms: string[];
@@ -12,8 +13,7 @@ interface CampaignPreviewProps {
 
 const CampaignPreview = ({ selectedPlatforms }: CampaignPreviewProps) => {
   const [salesFilter, setSalesFilter] = useState<string>("all");
-  const [showHeatmap, setShowHeatmap] = useState(true);
-  const [showAreaSales, setShowAreaSales] = useState(true);
+  const [selectedTab, setSelectedTab] = useState<string>("hourly");
   
   // Mock data for the heatmap
   const generateMockHeatmapData = () => {
@@ -91,9 +91,13 @@ const CampaignPreview = ({ selectedPlatforms }: CampaignPreviewProps) => {
         This is a simulation of how your campaign might perform based on historical data.
       </p>
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h4 className="text-base font-medium">Filter Sales by Level</h4>
+      <Tabs defaultValue="hourly" value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+        <div className="flex justify-between items-center mb-4">
+          <TabsList>
+            <TabsTrigger value="hourly">Sales by Hour</TabsTrigger>
+            <TabsTrigger value="region">Sales by Region</TabsTrigger>
+          </TabsList>
+          
           <ToggleGroup type="single" value={salesFilter} onValueChange={(value) => value && setSalesFilter(value)}>
             <ToggleGroupItem value="all" aria-label="All Sales">All</ToggleGroupItem>
             <ToggleGroupItem value="high" aria-label="High Sales">High</ToggleGroupItem>
@@ -102,14 +106,16 @@ const CampaignPreview = ({ selectedPlatforms }: CampaignPreviewProps) => {
           </ToggleGroup>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <Switch id="show-heatmap" checked={showHeatmap} onCheckedChange={setShowHeatmap} />
-          <Label htmlFor="show-heatmap">Show Sales Heatmap</Label>
-        </div>
-
-        {showHeatmap && (
+        <TabsContent value="hourly" className="space-y-4">
           <div className="space-y-2">
             <h4 className="text-base font-medium">Sales By Hour & Day</h4>
+            {salesFilter !== "all" && (
+              <p className="text-sm text-muted-foreground">
+                {salesFilter === "high" && "Showing high sales periods (70+)"}
+                {salesFilter === "medium" && "Showing medium sales periods (40-70)"}
+                {salesFilter === "low" && "Showing low sales periods (< 40)"}
+              </p>
+            )}
             <div className="overflow-x-auto pb-2">
               <div className="min-w-[700px]">
                 <div className="grid grid-cols-[100px_repeat(24,minmax(40px,1fr))]">
@@ -148,60 +154,51 @@ const CampaignPreview = ({ selectedPlatforms }: CampaignPreviewProps) => {
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </TabsContent>
 
-      {selectedPlatforms.includes('Talabat') && (
-        <div className="space-y-4 mt-8">
-          <div className="flex items-center space-x-2">
-            <Switch id="show-area-sales" checked={showAreaSales} onCheckedChange={setShowAreaSales} />
-            <Label htmlFor="show-area-sales">Show Area Sales</Label>
+        <TabsContent value="region" className="space-y-4">
+          <div className="space-y-2">
+            <h4 className="text-base font-medium">Sales By Region</h4>
+            <p className="text-sm text-muted-foreground">
+              {salesFilter === "high" && "Showing high sales areas (> 3000 AED)"}
+              {salesFilter === "medium" && "Showing medium sales areas (2000-3000 AED)"}
+              {salesFilter === "low" && "Showing low sales areas (< 2000 AED)"}
+              {salesFilter === "all" && "Showing all areas"}
+            </p>
+            <ChartContainer 
+              config={{
+                sales: {
+                  color: "#ef4444"
+                }
+              }}
+              className="h-64"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={filteredAreaSales}>
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fontSize: 12 }} 
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 12 }} 
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `AED ${value}`}
+                  />
+                  <Tooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="sales" name="Sales" fill="#ef4444" radius={[4, 4, 0, 0]}>
+                    {filteredAreaSales.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill="#ef4444" />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
           </div>
-          
-          {showAreaSales && (
-            <div className="space-y-2">
-              <h4 className="text-base font-medium">Sales By Area</h4>
-              <p className="text-sm text-muted-foreground">
-                {salesFilter === "high" && "Showing high sales areas (> 3000 AED)"}
-                {salesFilter === "medium" && "Showing medium sales areas (2000-3000 AED)"}
-                {salesFilter === "low" && "Showing low sales areas (< 2000 AED)"}
-                {salesFilter === "all" && "Showing all areas"}
-              </p>
-              <ChartContainer 
-                config={{
-                  sales: {
-                    color: "#ef4444"
-                  }
-                }}
-                className="h-64"
-              >
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={filteredAreaSales}>
-                    <XAxis 
-                      dataKey="name" 
-                      tick={{ fontSize: 12 }} 
-                      tickLine={false}
-                      axisLine={false}
-                    />
-                    <YAxis 
-                      tick={{ fontSize: 12 }} 
-                      tickLine={false}
-                      axisLine={false}
-                      tickFormatter={(value) => `AED ${value}`}
-                    />
-                    <Tooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="sales" name="Sales" fill="#ef4444" radius={[4, 4, 0, 0]}>
-                      {filteredAreaSales.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill="#ef4444" />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </div>
-          )}
-        </div>
-      )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

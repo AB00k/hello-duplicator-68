@@ -16,6 +16,7 @@ interface CampaignFormProps {
   selectedPlatforms: string[];
   campaignData: any;
   onChange: (data: any) => void;
+  onNext?: () => void; // Add onNext prop
 }
 
 const accountOptions = ['Account 1', 'Account 2', 'Account 3'];
@@ -23,7 +24,7 @@ const brandOptions = ['Brand 1', 'Brand 2', 'Brand 3'];
 const outletOptions = ['Outlet 1', 'Outlet 2', 'Outlet 3'];
 const areaOptions = ['Dubai Marina', 'Downtown Dubai', 'JBR', 'Business Bay', 'Jumeirah', 'Palm Jumeirah', 'JLT', 'DIFC'];
 
-const CampaignForm = ({ selectedPlatforms, campaignData, onChange }: CampaignFormProps) => {
+const CampaignForm = ({ selectedPlatforms, campaignData, onChange, onNext }: CampaignFormProps) => {
   const hasTalabat = selectedPlatforms.includes('Talabat');
   const hasDeliveroo = selectedPlatforms.includes('Deliveroo');
 
@@ -48,6 +49,10 @@ const CampaignForm = ({ selectedPlatforms, campaignData, onChange }: CampaignFor
       newAreas = [...campaignData.targetAreas, area];
     }
     onChange({ targetAreas: newAreas });
+  };
+
+  const isFormValid = () => {
+    return campaignData.account && campaignData.brand && campaignData.outlet;
   };
 
   return (
@@ -336,6 +341,19 @@ const CampaignForm = ({ selectedPlatforms, campaignData, onChange }: CampaignFor
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Next button */}
+      {onNext && (
+        <div className="flex justify-end mt-6">
+          <Button 
+            onClick={onNext}
+            disabled={!isFormValid()}
+            className="bg-marketing-red hover:bg-marketing-red/90"
+          >
+            Next
+          </Button>
         </div>
       )}
     </div>
