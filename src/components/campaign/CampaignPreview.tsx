@@ -50,6 +50,7 @@ const CampaignPreview = ({ selectedPlatforms }: CampaignPreviewProps) => {
     const areas = ['Dubai Marina', 'Downtown Dubai', 'JBR', 'Business Bay', 'Jumeirah', 'Palm Jumeirah'];
     return areas.map(area => ({
       name: area,
+      shortName: area.split(' ')[0], // Use first word only
       sales: Math.floor(Math.random() * 5000) + 1000
     })).sort((a, b) => b.sales - a.sales);
   };
@@ -171,24 +172,45 @@ const CampaignPreview = ({ selectedPlatforms }: CampaignPreviewProps) => {
                   color: "#ef4444"
                 }
               }}
-              className="h-64"
+              className="h-80" // Increased height for better visualization
             >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={filteredAreaSales}>
+                <BarChart 
+                  data={filteredAreaSales}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 45 }} // Added more bottom margin for labels
+                >
                   <XAxis 
-                    dataKey="name" 
+                    dataKey="shortName" 
                     tick={{ fontSize: 12 }} 
                     tickLine={false}
                     axisLine={false}
+                    height={45} // Increased height for labels
+                    angle={0} // Keep text horizontal
+                    interval={0} // Display all labels
                   />
                   <YAxis 
                     tick={{ fontSize: 12 }} 
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `AED ${value}`}
+                    tickFormatter={(value) => `${value/1000}k`} // Shorten y-axis labels
+                    width={40} // Set a fixed width for y-axis
                   />
-                  <Tooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="sales" name="Sales" fill="#ef4444" radius={[4, 4, 0, 0]}>
+                  <Tooltip 
+                    content={<ChartTooltipContent />} 
+                    formatter={(value, name) => [`AED ${value}`, name === "sales" ? "Sales" : name]}
+                    labelFormatter={(label) => {
+                      // Find the full name for this shortened label
+                      const item = areaSalesData.find(item => item.shortName === label);
+                      return item ? item.name : label;
+                    }}
+                  />
+                  <Bar 
+                    dataKey="sales" 
+                    name="Sales" 
+                    fill="#ef4444" 
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={60} // Limit maximum bar width
+                  >
                     {filteredAreaSales.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill="#ef4444" />
                     ))}
