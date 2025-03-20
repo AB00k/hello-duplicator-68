@@ -41,27 +41,27 @@ const platformsData = {
       orderDelay: {
         label: 'Order Delay',
         value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' }
+        trend: { value: '0.0%', direction: 'neutral' as const }
       },
       cancelledOrder: {
         label: 'Cancelled Order',
         value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' }
+        trend: { value: '0.0%', direction: 'neutral' as const }
       },
       avgPrepTime: {
         label: 'Avg Prep Time',
         value: 'N/A',
-        trend: { value: 'N/A', direction: 'neutral' }
+        trend: { value: 'N/A', direction: 'neutral' as const }
       },
       rejectedOrder: {
         label: 'Rejected Order',
         value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' }
+        trend: { value: '0.0%', direction: 'neutral' as const }
       },
       inaccurateOrder: {
         label: 'Inaccurate Order',
         value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' }
+        trend: { value: '0.0%', direction: 'neutral' as const }
       }
     }
   },
@@ -73,27 +73,27 @@ const platformsData = {
       orderDelay: {
         label: 'Order Delay',
         value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' }
+        trend: { value: '0.0%', direction: 'neutral' as const }
       },
       cancelledOrder: {
         label: 'Cancelled Order',
         value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' }
+        trend: { value: '0.0%', direction: 'neutral' as const }
       },
       avgPrepTime: {
         label: 'Avg Prep Time',
         value: 'N/A',
-        trend: { value: '0.0%', direction: 'neutral' }
+        trend: { value: '0.0%', direction: 'neutral' as const }
       },
       rejectedOrder: {
         label: 'Rejected Order',
         value: '0.00%',
-        trend: { value: '-0.9%', direction: 'down' }
+        trend: { value: '-0.9%', direction: 'down' as const }
       },
       inaccurateOrder: {
         label: 'Inaccurate Order',
         value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' }
+        trend: { value: '0.0%', direction: 'neutral' as const }
       }
     }
   },
@@ -105,27 +105,27 @@ const platformsData = {
       orderDelay: {
         label: 'Order Delay',
         value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' }
+        trend: { value: '0.0%', direction: 'neutral' as const }
       },
       cancelledOrder: {
         label: 'Cancelled Order',
         value: '2.00%',
-        trend: { value: '2.0%', direction: 'up' }
+        trend: { value: '2.0%', direction: 'up' as const }
       },
       avgPrepTime: {
         label: 'Avg Prep Time',
         value: '12.34 mins',
-        trend: { value: '2.64%', direction: 'up' }
+        trend: { value: '2.64%', direction: 'up' as const }
       },
       rejectedOrder: {
         label: 'Rejected Order',
         value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' }
+        trend: { value: '0.0%', direction: 'neutral' as const }
       },
       inaccurateOrder: {
         label: 'Inaccurate Order',
         value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' }
+        trend: { value: '0.0%', direction: 'neutral' as const }
       }
     }
   },
@@ -137,27 +137,27 @@ const platformsData = {
       orderDelay: {
         label: 'Order Delay',
         value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' }
+        trend: { value: '0.0%', direction: 'neutral' as const }
       },
       cancelledOrder: {
         label: 'Cancelled Order',
         value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' }
+        trend: { value: '0.0%', direction: 'neutral' as const }
       },
       avgPrepTime: {
         label: 'Avg Prep Time',
         value: 'N/A',
-        trend: { value: '0.0%', direction: 'neutral' }
+        trend: { value: '0.0%', direction: 'neutral' as const }
       },
       rejectedOrder: {
         label: 'Rejected Order',
         value: '0.00%',
-        trend: { value: '-0.9%', direction: 'down' }
+        trend: { value: '-0.9%', direction: 'down' as const }
       },
       inaccurateOrder: {
         label: 'Inaccurate Order',
         value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' }
+        trend: { value: '0.0%', direction: 'neutral' as const }
       }
     }
   }
@@ -188,15 +188,7 @@ const recentAlerts = [
     time: '5 hours ago', 
     location: 'JBR Branch',
     status: 'Resolved'
-  },
-  { 
-    id: 4, 
-    platform: 'Deliveroo', 
-    issue: 'Rejected Order', 
-    time: '8 hours ago', 
-    location: 'Business Bay Branch',
-    status: 'Resolved'
-  },
+  }
 ];
 
 // Performance by location data
@@ -205,7 +197,6 @@ const locationPerformance = [
   { location: 'Downtown Dubai', score: 92 },
   { location: 'JBR', score: 89 },
   { location: 'Business Bay', score: 87 },
-  { location: 'Jumeirah', score: 84 },
 ];
 
 const OperationsTab = () => {
@@ -227,99 +218,82 @@ const OperationsTab = () => {
         </Tabs>
       </div>
       
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-up" style={{ animationDelay: '200ms' }}>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Overall Score</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">93.7%</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-500 inline-flex items-center">
-                <ArrowUpRight className="h-3 w-3 mr-1" />
-                +1.2%
-              </span>{" "}
-              vs. last period
-            </p>
-            <div className="mt-4">
-              <Progress value={93.7} className="h-2" />
+      {/* Key Performance Indicators - Simplified */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-up" style={{ animationDelay: '200ms' }}>
+        <Card className="bg-white shadow-sm hover:shadow-md transition-all">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center text-center">
+              <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mb-3">
+                <BarChart3 className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-bold">93.7%</h3>
+              <p className="text-sm text-muted-foreground">Overall Score</p>
+              <div className="w-full mt-3">
+                <Progress value={93.7} className="h-2" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">On-Time Delivery</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">99.8%</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-500 inline-flex items-center">
-                <ArrowUpRight className="h-3 w-3 mr-1" />
-                +0.3%
-              </span>{" "}
-              vs. last period
-            </p>
-            <div className="mt-4">
-              <Progress value={99.8} className="h-2" />
+        <Card className="bg-white shadow-sm hover:shadow-md transition-all">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center text-center">
+              <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center mb-3">
+                <Clock className="h-8 w-8 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-bold">99.8%</h3>
+              <p className="text-sm text-muted-foreground">On-Time Delivery</p>
+              <div className="w-full mt-3">
+                <Progress value={99.8} className="h-2" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Cancellation Rate</CardTitle>
-            <XCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0.5%</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-red-500 inline-flex items-center">
-                <ArrowUpRight className="h-3 w-3 mr-1" />
-                +0.2%
-              </span>{" "}
-              vs. last period
-            </p>
-            <div className="mt-4">
-              <Progress value={99.5} className="h-2" />
+        <Card className="bg-white shadow-sm hover:shadow-md transition-all">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center text-center">
+              <div className="h-16 w-16 rounded-full bg-red-100 flex items-center justify-center mb-3">
+                <XCircle className="h-8 w-8 text-red-600" />
+              </div>
+              <h3 className="text-xl font-bold">0.5%</h3>
+              <p className="text-sm text-muted-foreground">Cancellation Rate</p>
+              <div className="w-full mt-3">
+                <Progress value={99.5} className="h-2" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Order Accuracy</CardTitle>
-            <ClipboardList className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">99.9%</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-500 inline-flex items-center">
-                <ArrowUpRight className="h-3 w-3 mr-1" />
-                +0.1%
-              </span>{" "}
-              vs. last period
-            </p>
-            <div className="mt-4">
-              <Progress value={99.9} className="h-2" />
+        <Card className="bg-white shadow-sm hover:shadow-md transition-all">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center text-center">
+              <div className="h-16 w-16 rounded-full bg-purple-100 flex items-center justify-center mb-3">
+                <ClipboardList className="h-8 w-8 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-bold">99.9%</h3>
+              <p className="text-sm text-muted-foreground">Order Accuracy</p>
+              <div className="w-full mt-3">
+                <Progress value={99.9} className="h-2" />
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
       
-      {/* Platform Metrics Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-up" style={{ animationDelay: '300ms' }}>
-        <PlatformMetricsCard {...platformsData.talabat} />
-        <PlatformMetricsCard {...platformsData.noon} />
-        <PlatformMetricsCard {...platformsData.careem} />
-        <PlatformMetricsCard {...platformsData.deliveroo} />
+      {/* Platform Performance Overview */}
+      <div className="animate-fade-up" style={{ animationDelay: '300ms' }}>
+        <h2 className="text-xl font-semibold mb-4">Platform Performance</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <PlatformMetricsCard {...platformsData.talabat} />
+          <PlatformMetricsCard {...platformsData.noon} />
+          <PlatformMetricsCard {...platformsData.careem} />
+          <PlatformMetricsCard {...platformsData.deliveroo} />
+        </div>
       </div>
       
-      {/* Recent Alerts & Performance by Location */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-up" style={{ animationDelay: '400ms' }}>
+      {/* Recent Alerts - Simplified */}
+      <div className="animate-fade-up" style={{ animationDelay: '400ms' }}>
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
@@ -328,50 +302,55 @@ const OperationsTab = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Platform</TableHead>
-                  <TableHead>Issue</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Time</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentAlerts.map(alert => (
-                  <TableRow key={alert.id}>
-                    <TableCell className="font-medium">{alert.platform}</TableCell>
-                    <TableCell>{alert.issue}</TableCell>
-                    <TableCell>{alert.location}</TableCell>
-                    <TableCell className="text-muted-foreground">{alert.time}</TableCell>
-                    <TableCell>
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        alert.status === 'Active' 
-                          ? 'bg-red-100 text-red-700' 
-                          : 'bg-green-100 text-green-700'
-                      }`}>
-                        {alert.status}
-                      </span>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Platform</TableHead>
+                    <TableHead>Issue</TableHead>
+                    <TableHead>Location</TableHead>
+                    <TableHead>Time</TableHead>
+                    <TableHead>Status</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {recentAlerts.map(alert => (
+                    <TableRow key={alert.id}>
+                      <TableCell className="font-medium">{alert.platform}</TableCell>
+                      <TableCell>{alert.issue}</TableCell>
+                      <TableCell>{alert.location}</TableCell>
+                      <TableCell className="text-muted-foreground">{alert.time}</TableCell>
+                      <TableCell>
+                        <span className={`px-2 py-1 text-xs rounded-full ${
+                          alert.status === 'Active' 
+                            ? 'bg-red-100 text-red-700' 
+                            : 'bg-green-100 text-green-700'
+                        }`}>
+                          {alert.status}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
-        
+      </div>
+      
+      {/* Performance by Location - Simplified */}
+      <div className="animate-fade-up" style={{ animationDelay: '500ms' }}>
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Performance by Location</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {locationPerformance.map(location => (
-                <div key={location.location} className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">{location.location}</span>
-                    <span className="text-sm font-medium">{location.score}/100</span>
+                <div key={location.location} className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex justify-between mb-2">
+                    <span className="font-medium">{location.location}</span>
+                    <span className="font-bold">{location.score}/100</span>
                   </div>
                   <Progress 
                     value={location.score} 
