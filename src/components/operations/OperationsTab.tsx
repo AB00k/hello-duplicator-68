@@ -1,18 +1,16 @@
-
 import React, { useState } from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PlatformMetricsCard from './PlatformMetricsCard';
 import { 
   BarChart3, 
-  ArrowUpRight, 
-  ClipboardList, 
   Clock, 
   XCircle, 
-  AlertCircle 
+  ClipboardList, 
+  AlertCircle
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Progress } from '@/components/ui/progress';
+import MetricCard from '@/components/MetricCard';
 
 // Platform Logos
 const TalabatLogo = () => (
@@ -205,7 +203,7 @@ const OperationsTab = () => {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Operations Header */}
-      <div className="flex justify-between items-center animate-fade-up" style={{ animationDelay: '100ms' }}>
+      <div className="flex justify-between items-center mb-8 animate-fade-up" style={{ animationDelay: '100ms' }}>
         <h1 className="text-3xl font-bold text-marketing-red">Operations Performance</h1>
         
         <Tabs defaultValue="today" className="w-[400px]" onValueChange={setTimeframe} value={timeframe}>
@@ -218,72 +216,48 @@ const OperationsTab = () => {
         </Tabs>
       </div>
       
-      {/* Key Performance Indicators - Simplified */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-up" style={{ animationDelay: '200ms' }}>
-        <Card className="bg-white shadow-sm hover:shadow-md transition-all">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center text-center">
-              <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mb-3">
-                <BarChart3 className="h-8 w-8 text-green-600" />
-              </div>
-              <h3 className="text-xl font-bold">93.7%</h3>
-              <p className="text-sm text-muted-foreground">Overall Score</p>
-              <div className="w-full mt-3">
-                <Progress value={93.7} className="h-2" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white shadow-sm hover:shadow-md transition-all">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center text-center">
-              <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center mb-3">
-                <Clock className="h-8 w-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-bold">99.8%</h3>
-              <p className="text-sm text-muted-foreground">On-Time Delivery</p>
-              <div className="w-full mt-3">
-                <Progress value={99.8} className="h-2" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white shadow-sm hover:shadow-md transition-all">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center text-center">
-              <div className="h-16 w-16 rounded-full bg-red-100 flex items-center justify-center mb-3">
-                <XCircle className="h-8 w-8 text-red-600" />
-              </div>
-              <h3 className="text-xl font-bold">0.5%</h3>
-              <p className="text-sm text-muted-foreground">Cancellation Rate</p>
-              <div className="w-full mt-3">
-                <Progress value={99.5} className="h-2" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white shadow-sm hover:shadow-md transition-all">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center text-center">
-              <div className="h-16 w-16 rounded-full bg-purple-100 flex items-center justify-center mb-3">
-                <ClipboardList className="h-8 w-8 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-bold">99.9%</h3>
-              <p className="text-sm text-muted-foreground">Order Accuracy</p>
-              <div className="w-full mt-3">
-                <Progress value={99.9} className="h-2" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Performance Overview - Using same MetricCard component as Marketing tab */}
+      <div className="mb-12 animate-fade-up" style={{ animationDelay: '200ms' }}>
+        <h2 className="text-2xl font-semibold mb-6">Performance Overview</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <MetricCard 
+            icon={<BarChart3 className="w-5 h-5" />}
+            iconBgColor="bg-marketing-teal"
+            label="Overall Score"
+            value="93.7%"
+            trend={{ value: "+2.1%", direction: "up" }}
+          />
+          
+          <MetricCard 
+            icon={<Clock className="w-5 h-5" />}
+            iconBgColor="bg-marketing-blue"
+            label="On-Time Delivery"
+            value="99.8%"
+            trend={{ value: "+0.3%", direction: "up" }}
+          />
+          
+          <MetricCard 
+            icon={<XCircle className="w-5 h-5" />}
+            iconBgColor="bg-marketing-red"
+            label="Cancellation Rate"
+            value="0.5%"
+            trend={{ value: "-0.2%", direction: "down" }}
+          />
+          
+          <MetricCard 
+            icon={<ClipboardList className="w-5 h-5" />}
+            iconBgColor="bg-marketing-purple"
+            label="Order Accuracy"
+            value="99.9%"
+            trend={{ value: "+0.1%", direction: "up" }}
+          />
+        </div>
       </div>
       
       {/* Platform Performance Overview */}
       <div className="animate-fade-up" style={{ animationDelay: '300ms' }}>
-        <h2 className="text-xl font-semibold mb-4">Platform Performance</h2>
+        <h2 className="text-2xl font-semibold mb-6">Platform Performance</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <PlatformMetricsCard {...platformsData.talabat} />
           <PlatformMetricsCard {...platformsData.noon} />
@@ -292,16 +266,11 @@ const OperationsTab = () => {
         </div>
       </div>
       
-      {/* Recent Alerts - Simplified */}
+      {/* Recent Alerts */}
       <div className="animate-fade-up" style={{ animationDelay: '400ms' }}>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-amber-500" />
-              Recent Alerts
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <h2 className="text-2xl font-semibold mb-6">Recent Alerts</h2>
+        <Card className="bg-white shadow-sm hover:shadow-md transition-all">
+          <CardContent className="pt-6">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -338,29 +307,24 @@ const OperationsTab = () => {
         </Card>
       </div>
       
-      {/* Performance by Location - Simplified */}
+      {/* Performance by Location */}
       <div className="animate-fade-up" style={{ animationDelay: '500ms' }}>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Performance by Location</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {locationPerformance.map(location => (
-                <div key={location.location} className="bg-gray-50 p-4 rounded-lg">
-                  <div className="flex justify-between mb-2">
-                    <span className="font-medium">{location.location}</span>
-                    <span className="font-bold">{location.score}/100</span>
-                  </div>
-                  <Progress 
-                    value={location.score} 
-                    className="h-2"
-                  />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <h2 className="text-2xl font-semibold mb-6">Performance by Location</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {locationPerformance.map(location => (
+            <MetricCard
+              key={location.location}
+              icon={<BarChart3 className="w-5 h-5" />}
+              iconBgColor={`bg-marketing-${location.score >= 90 ? 'green' : location.score >= 85 ? 'blue' : 'orange'}`}
+              label={location.location}
+              value={`${location.score}/100`}
+              trend={{ 
+                value: location.score >= 90 ? "Excellent" : location.score >= 85 ? "Good" : "Average", 
+                direction: location.score >= 85 ? "up" : "down" 
+              }}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
