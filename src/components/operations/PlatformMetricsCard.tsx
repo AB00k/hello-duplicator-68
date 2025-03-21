@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { TrendingUp, TrendingDown, Clock, XCircle, DollarSign, AlertCircle, Power, ChevronDown, ChevronUp } from 'lucide-react';
+import { TrendingUp, TrendingDown, ChevronDown, ChevronUp } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface MetricItemProps {
@@ -13,15 +13,14 @@ interface MetricItemProps {
   icon?: React.ReactNode;
 }
 
-const MetricItem: React.FC<MetricItemProps> = ({ label, value, trend, icon }) => {
+const MetricItem: React.FC<MetricItemProps> = ({ label, value, trend }) => {
   return (
-    <div className="flex items-center justify-between py-2">
-      <div className="flex items-center gap-2">
-        {icon && <span className="text-muted-foreground">{icon}</span>}
+    <div className="flex items-center justify-between py-1.5">
+      <div className="flex items-center">
         <span className="text-sm font-medium text-muted-foreground">{label}</span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-sm font-bold">{value}</span>
+        <span className="text-sm font-bold text-right w-16">{value}</span>
         <div className={`flex items-center text-xs px-2 py-0.5 rounded-full ${
           trend.direction === 'up' 
             ? 'bg-green-100 text-green-700' 
@@ -52,10 +51,10 @@ const MetricSection: React.FC<MetricSectionProps> = ({ title, icon, iconColor, m
   const [isExpanded, setIsExpanded] = useState(false);
   
   return (
-    <div className="space-y-1 border-b pb-2 last:border-b-0">
+    <div className="space-y-0.5 border-b last:border-b-0 pb-1">
       <button 
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between py-2 hover:bg-gray-50 rounded transition-colors"
+        className="w-full flex items-center justify-between py-1.5 hover:bg-gray-50 rounded transition-colors"
       >
         <h4 className="text-sm font-semibold text-muted-foreground flex items-center">
           <span className={iconColor}>{icon}</span>
@@ -68,7 +67,7 @@ const MetricSection: React.FC<MetricSectionProps> = ({ title, icon, iconColor, m
       </button>
       
       {isExpanded && (
-        <div className="space-y-1 pl-5">
+        <div className="space-y-0.5 pl-5">
           {metrics.map((metric, index) => (
             <MetricItem key={`metric-${index}`} {...metric} />
           ))}
@@ -112,16 +111,16 @@ const PlatformMetricsCard: React.FC<PlatformMetricsCardProps> = ({
   
   if (scorePercentage >= 95) {
     performanceLevel = 'Epic';
-    ringColor = 'bg-marketing-green';
+    ringColor = '#34C759'; // Dark green for Epic
   } else if (scorePercentage >= 85) {
     performanceLevel = 'Good';
-    ringColor = 'bg-marketing-orange';
+    ringColor = '#63DE80'; // Lighter green for Good
   } else if (scorePercentage >= 70) {
-    performanceLevel = 'Average';
-    ringColor = 'bg-marketing-blue';
+    performanceLevel = 'Fair';
+    ringColor = '#FEF7CD'; // Yellow for Fair
   } else {
     performanceLevel = 'Poor';
-    ringColor = 'bg-marketing-red';
+    ringColor = '#FF3B30'; // Red for Poor
   }
 
   // Calculate dimensions for donut chart
@@ -148,13 +147,13 @@ const PlatformMetricsCard: React.FC<PlatformMetricsCardProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 animate-hover-lift h-full">
-      <div className="flex items-center gap-2 mb-4">
+    <div className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 animate-hover-lift h-full">
+      <div className="flex items-center gap-2 mb-3">
         {logo}
         <h3 className="text-lg font-semibold">Operations on {platform}</h3>
       </div>
       
-      <div className="flex items-start justify-between mb-6 mt-4">
+      <div className="flex items-start justify-between mb-4 mt-3">
         <div className="relative h-36 w-36 flex justify-center items-center">
           {/* SVG for complete donut chart */}
           <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
@@ -174,10 +173,9 @@ const PlatformMetricsCard: React.FC<PlatformMetricsCardProps> = ({
               cy={size/2} 
               r={size/2 - thickness/2} 
               fill="none" 
-              stroke={ringColor.replace('bg-', 'var(--color-')} 
-              className={ringColor.replace('bg-', 'stroke-')}
+              stroke={ringColor}
               strokeWidth={thickness} 
-              strokeDasharray={`${2 * Math.PI * (size/2 - thickness/2) * scorePercentage / 100} ${2 * Math.PI * (size/2 - thickness/2)}`}
+              strokeDasharray={`${2 * Math.PI * (size/2 - thickness/2) * (scorePercentage / 100)} ${2 * Math.PI * (size/2 - thickness/2)}`}
               strokeDashoffset="0"
               transform={`rotate(-90 ${size/2} ${size/2})`}
             />
@@ -202,26 +200,26 @@ const PlatformMetricsCard: React.FC<PlatformMetricsCardProps> = ({
           </svg>
         </div>
         
-        <div className="flex-1 ml-4 max-h-[300px]">
-          <ScrollArea className="h-[300px] pr-3">
-            <div className="space-y-2">
+        <div className="flex-1 ml-3 max-h-[250px]">
+          <ScrollArea className="h-[250px] pr-3">
+            <div className="space-y-1">
               <MetricSection 
                 title="Rejection Metrics" 
-                icon={<XCircle className="w-4 h-4 mr-1" />} 
+                icon={<div className="w-1 h-4 bg-red-500 rounded-full mr-2"></div>} 
                 iconColor="text-marketing-red"
                 metrics={rejectionMetrics}
               />
               
               <MetricSection 
                 title="Cancellation Metrics" 
-                icon={<AlertCircle className="w-4 h-4 mr-1" />} 
+                icon={<div className="w-1 h-4 bg-orange-500 rounded-full mr-2"></div>} 
                 iconColor="text-marketing-orange"
                 metrics={cancellationMetrics}
               />
               
               <MetricSection 
                 title="Time Metrics" 
-                icon={<Clock className="w-4 h-4 mr-1" />} 
+                icon={<div className="w-1 h-4 bg-blue-500 rounded-full mr-2"></div>} 
                 iconColor="text-marketing-blue"
                 metrics={timeMetrics}
               />

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -74,20 +73,27 @@ const CreateCampaignDrawer: React.FC<CreateCampaignDrawerProps> = ({ isOpen, onC
     });
   };
 
+  const handleCampaignFormChange = (data: any) => {
+    if (data && typeof data === 'object') {
+      setFormData({
+        ...formData,
+        ...data
+      });
+    }
+  };
+
   const getStepStatus = (stepId: number): StepStatus => {
     if (stepId < currentStep) return 'completed';
     if (stepId === currentStep) return 'current';
     return 'upcoming';
   };
   
-  // Determine if we should disable the next button based on current step validation
   const isNextDisabled = () => {
     if (currentStep === 1 && selectedPlatforms.length === 0) {
       return true;
     }
     
     if (currentStep === 2) {
-      // Fix for type error by converting string to number for comparison
       const budgetValue = parseFloat(formData.budget);
       
       if (
@@ -110,7 +116,6 @@ const CreateCampaignDrawer: React.FC<CreateCampaignDrawerProps> = ({ isOpen, onC
     <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm">
       <div className="fixed inset-y-0 right-0 w-full max-w-3xl bg-background shadow-lg animate-in slide-in-from-right">
         <div className="flex flex-col h-full">
-          {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b">
             <h2 className="text-xl font-bold">Create a New Campaign</h2>
             <Button 
@@ -123,7 +128,6 @@ const CreateCampaignDrawer: React.FC<CreateCampaignDrawerProps> = ({ isOpen, onC
             </Button>
           </div>
           
-          {/* Steps */}
           <div className="flex items-center justify-between px-6 py-4 bg-muted/50">
             {steps.map((step, index) => (
               <React.Fragment key={step.id}>
@@ -151,7 +155,6 @@ const CreateCampaignDrawer: React.FC<CreateCampaignDrawerProps> = ({ isOpen, onC
             ))}
           </div>
           
-          {/* Content */}
           <ScrollArea className="flex-1 px-6 py-6">
             {currentStep === 1 && (
               <PlatformSelector 
@@ -163,7 +166,7 @@ const CreateCampaignDrawer: React.FC<CreateCampaignDrawerProps> = ({ isOpen, onC
             {currentStep === 2 && (
               <CampaignForm 
                 formData={formData}
-                onChange={handleFormChange}
+                onChange={handleCampaignFormChange}
               />
             )}
             
@@ -172,7 +175,6 @@ const CreateCampaignDrawer: React.FC<CreateCampaignDrawerProps> = ({ isOpen, onC
             )}
           </ScrollArea>
           
-          {/* Footer */}
           <div className="flex items-center justify-between px-6 py-4 border-t">
             <Button 
               variant="outline" 
@@ -186,7 +188,6 @@ const CreateCampaignDrawer: React.FC<CreateCampaignDrawerProps> = ({ isOpen, onC
               {currentStep === steps.length ? (
                 <Button 
                   className="bg-marketing-green hover:bg-marketing-green/90"
-                  // Fix for type error by using strict equality with string
                   disabled={formData.budget === '' || parseFloat(formData.budget) <= 0}
                 >
                   Launch Campaign
