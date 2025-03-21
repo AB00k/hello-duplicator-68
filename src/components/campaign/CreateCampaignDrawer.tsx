@@ -165,7 +165,7 @@ const CreateCampaignDrawer: React.FC<CreateCampaignDrawerProps> = ({ isOpen, onC
             
             {currentStep === 2 && (
               <CampaignForm 
-                data={formData}
+                formData={formData}
                 onChange={handleCampaignFormChange}
               />
             )}

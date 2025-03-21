@@ -148,13 +148,13 @@ const PlatformMetricsCard: React.FC<PlatformMetricsCardProps> = ({
 
   return (
     <div className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-300 animate-hover-lift h-full">
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center gap-2 mb-4">
         {logo}
         <h3 className="text-lg font-semibold">Operations on {platform}</h3>
       </div>
       
-      <div className="flex items-start justify-between mb-3">
-        <div className="relative flex justify-center items-center">
+      <div className="flex items-start justify-between mb-4">
+        <div className="relative flex justify-center items-center py-2">
           {/* SVG for complete donut chart */}
           <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
             {/* Background circle */}
