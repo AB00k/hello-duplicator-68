@@ -1,17 +1,10 @@
 
 import React, { useState } from 'react';
-import { 
-  Drawer, 
-  DrawerClose, 
-  DrawerContent, 
-  DrawerFooter, 
-  DrawerHeader, 
-  DrawerTitle 
-} from '@/components/ui/drawer';
-import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import PlatformSelector from './PlatformSelector';
 import CampaignForm from './CampaignForm';
+import { Button } from '@/components/ui/button';
 import CampaignPreview from './CampaignPreview';
 
 interface CreateCampaignDrawerProps {
@@ -19,251 +12,199 @@ interface CreateCampaignDrawerProps {
   onClose: () => void;
 }
 
-const CreateCampaignDrawer = ({ isOpen, onClose }: CreateCampaignDrawerProps) => {
+type Step = {
+  id: number;
+  title: string;
+  description: string;
+};
+
+type StepStatus = 'completed' | 'current' | 'upcoming';
+
+const CreateCampaignDrawer: React.FC<CreateCampaignDrawerProps> = ({ isOpen, onClose }) => {
+  const [currentStep, setCurrentStep] = useState<number>(1);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
-  const [currentStep, setCurrentStep] = useState(1);
-  const [campaignData, setCampaignData] = useState({
-    account: '',
-    brand: '',
-    outlet: '',
-    bidPerClick: 3,
-    budget: 1000,
-    duration: 7,
-    startDate: new Date(),
-    endDate: new Date(new Date().setDate(new Date().getDate() + 7)),
-    targetAudience: {
-      allCustomers: false,
-      newCustomers: false,
-      lapsedCustomers: false,
-      deliverooPlus: false,
-      noonPrime: false
-    },
-    targetAreas: []
+  const [formData, setFormData] = useState({
+    name: '',
+    startDate: null,
+    endDate: null,
+    budget: '',
+    objective: '',
+    targetAudience: '',
+    description: '',
   });
-
-  const handlePlatformSelection = (platforms: string[]) => {
-    setSelectedPlatforms(platforms);
-  };
-
-  const handleCampaignDataChange = (data: any) => {
-    setCampaignData({ ...campaignData, ...data });
-  };
-
-  const handleBack = () => {
-    setCurrentStep(currentStep - 1);
-  };
-
+  
+  const steps: Step[] = [
+    {
+      id: 1,
+      title: 'Select Platforms',
+      description: 'Choose the platforms for your campaign'
+    },
+    {
+      id: 2,
+      title: 'Campaign Details',
+      description: 'Define your campaign strategy'
+    },
+    {
+      id: 3,
+      title: 'Preview',
+      description: 'Review your campaign before launch'
+    }
+  ];
+  
   const handleNext = () => {
-    if (currentStep < 3) {
+    if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
-    } else {
-      // Submit campaign
-      console.log('Campaign data', { platforms: selectedPlatforms, ...campaignData });
-      onClose();
     }
   };
-
-  // Reset state when drawer closes
-  const handleCloseComplete = () => {
-    setSelectedPlatforms([]);
-    setCurrentStep(1);
-    setCampaignData({
-      account: '',
-      brand: '',
-      outlet: '',
-      bidPerClick: 3,
-      budget: 1000,
-      duration: 7,
-      startDate: new Date(),
-      endDate: new Date(new Date().setDate(new Date().getDate() + 7)),
-      targetAudience: {
-        allCustomers: false,
-        newCustomers: false,
-        lapsedCustomers: false,
-        deliverooPlus: false,
-        noonPrime: false
-      },
-      targetAreas: []
+  
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+  
+  const handlePlatformChange = (platforms: string[]) => {
+    setSelectedPlatforms(platforms);
+  };
+  
+  const handleFormChange = (field: string, value: any) => {
+    setFormData({
+      ...formData,
+      [field]: value
     });
   };
 
-  const steps = [
-    'Select Platform',
-    'Campaign Details',
-    'Review & Confirm'
-  ];
-
-  // Calculate end date based on duration
-  const getEndDate = () => {
-    if (campaignData.duration === 'custom') {
-      return campaignData.endDate;
-    } else {
-      // Convert duration to number to ensure type safety
-      const durationDays = typeof campaignData.duration === 'string' 
-        ? parseInt(campaignData.duration, 10) 
-        : campaignData.duration;
-        
-      const endDate = new Date(campaignData.startDate);
-      endDate.setDate(campaignData.startDate.getDate() + durationDays);
-      return endDate;
+  const getStepStatus = (stepId: number): StepStatus => {
+    if (stepId < currentStep) return 'completed';
+    if (stepId === currentStep) return 'current';
+    return 'upcoming';
+  };
+  
+  // Determine if we should disable the next button based on current step validation
+  const isNextDisabled = () => {
+    if (currentStep === 1 && selectedPlatforms.length === 0) {
+      return true;
     }
+    
+    if (currentStep === 2) {
+      // Fix for type error by converting string to number for comparison
+      const budgetValue = parseFloat(formData.budget);
+      
+      if (
+        !formData.name ||
+        !formData.startDate ||
+        !formData.endDate ||
+        (formData.budget && (isNaN(budgetValue) || budgetValue <= 0)) ||
+        !formData.objective
+      ) {
+        return true;
+      }
+    }
+    
+    return false;
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Drawer 
-      open={isOpen} 
-      onOpenChange={(open) => {
-        if (!open) {
-          onClose();
-          handleCloseComplete();
-        }
-      }}
-    >
-      <DrawerContent className="h-[85vh] overflow-y-auto">
-        <DrawerHeader className="border-b">
-          <div className="flex items-center justify-between">
-            <DrawerTitle className="text-xl font-bold">Create Campaign ({currentStep}/{steps.length})</DrawerTitle>
-            <DrawerClose>
-              <Button variant="ghost" size="icon">
-                <X className="h-5 w-5" />
-              </Button>
-            </DrawerClose>
+    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm">
+      <div className="fixed inset-y-0 right-0 w-full max-w-3xl bg-background shadow-lg animate-in slide-in-from-right">
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b">
+            <h2 className="text-xl font-bold">Create a New Campaign</h2>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={onClose}
+              className="rounded-full"
+            >
+              <X className="h-5 w-5" />
+            </Button>
           </div>
-          <div className="flex justify-between mt-4 mb-2">
+          
+          {/* Steps */}
+          <div className="flex items-center justify-between px-6 py-4 bg-muted/50">
             {steps.map((step, index) => (
-              <div key={step} className="flex flex-col items-center">
-                <div 
-                  className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 
-                    ${index + 1 === currentStep 
-                      ? 'bg-marketing-red text-white' 
-                      : index + 1 < currentStep 
-                        ? 'bg-green-500 text-white' 
-                        : 'bg-gray-200 text-gray-600'}`}
-                >
-                  {index + 1}
-                </div>
-                <span className="text-sm font-medium text-gray-600">{step}</span>
-              </div>
-            ))}
-          </div>
-        </DrawerHeader>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
-          <div className="space-y-6 md:border-r pr-4">
-            {currentStep === 1 && (
-              <PlatformSelector 
-                selectedPlatforms={selectedPlatforms} 
-                onChange={handlePlatformSelection}
-                onNext={handleNext}
-              />
-            )}
-
-            {currentStep === 2 && (
-              <CampaignForm
-                selectedPlatforms={selectedPlatforms}
-                campaignData={campaignData}
-                onChange={handleCampaignDataChange}
-                onNext={handleNext}
-              />
-            )}
-
-            {currentStep === 3 && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Campaign Summary</h3>
-                <div className="space-y-2">
-                  <p><span className="font-medium">Platforms:</span> {selectedPlatforms.join(', ')}</p>
-                  <p><span className="font-medium">Account:</span> {campaignData.account}</p>
-                  <p><span className="font-medium">Brand:</span> {campaignData.brand}</p>
-                  <p><span className="font-medium">Outlet:</span> {campaignData.outlet}</p>
-                  <p><span className="font-medium">Bid per Click:</span> AED {campaignData.bidPerClick.toFixed(2)}</p>
-                  <p><span className="font-medium">Budget:</span> AED {campaignData.budget}</p>
-                  
-                  {campaignData.duration === 'custom' ? (
-                    <div>
-                      <p><span className="font-medium">Duration:</span> Custom</p>
-                      <p><span className="font-medium">Start Date:</span> {campaignData.startDate.toLocaleDateString()}</p>
-                      <p><span className="font-medium">End Date:</span> {campaignData.endDate.toLocaleDateString()}</p>
-                      <p><span className="font-medium">Total Days:</span> {
-                        Math.ceil((campaignData.endDate.getTime() - campaignData.startDate.getTime()) / (1000 * 60 * 60 * 24))
-                      }</p>
-                    </div>
-                  ) : (
-                    <div>
-                      <p><span className="font-medium">Duration:</span> {campaignData.duration} days</p>
-                      <p><span className="font-medium">Start Date:</span> {campaignData.startDate.toLocaleDateString()}</p>
-                      <p><span className="font-medium">End Date:</span> {getEndDate().toLocaleDateString()}</p>
-                    </div>
-                  )}
-                  
-                  {(selectedPlatforms.includes('Talabat') || selectedPlatforms.includes('Deliveroo') || selectedPlatforms.includes('Noon')) && (
-                    <div>
-                      <p className="font-medium">Target Audience:</p>
-                      <ul className="list-disc list-inside ml-2">
-                        {campaignData.targetAudience.allCustomers && <li>All Customers</li>}
-                        {campaignData.targetAudience.newCustomers && <li>New Customers</li>}
-                        {campaignData.targetAudience.lapsedCustomers && <li>Lapsed Customers</li>}
-                        {campaignData.targetAudience.deliverooPlus && <li>Deliveroo Plus</li>}
-                        {campaignData.targetAudience.noonPrime && <li>Noon Prime</li>}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  {selectedPlatforms.includes('Talabat') && campaignData.targetAreas.length > 0 && (
-                    <div>
-                      <p className="font-medium">Target Areas:</p>
-                      <ul className="list-disc list-inside ml-2">
-                        {campaignData.targetAreas.map((area: string) => (
-                          <li key={area}>{area}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="mt-8">
-                  <h4 className="text-base font-semibold mb-4">Activate Your Campaign</h4>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Your campaign is ready to be activated. Click the button below to start it immediately, or schedule it for later.
-                  </p>
-                  <div className="flex gap-3">
-                    <Button className="bg-green-600 hover:bg-green-700 text-white">
-                      Activate Now
-                    </Button>
-                    <Button variant="outline">
-                      Schedule For Later
-                    </Button>
+              <React.Fragment key={step.id}>
+                <div className="flex items-center">
+                  <div className={`flex items-center justify-center h-8 w-8 rounded-full text-sm font-medium 
+                    ${getStepStatus(step.id) === 'completed' 
+                      ? 'bg-marketing-green text-white' 
+                      : getStepStatus(step.id) === 'current'
+                        ? 'bg-marketing-red text-white'
+                        : 'bg-muted-foreground/30 text-muted-foreground'
+                    }`}
+                  >
+                    {getStepStatus(step.id) === 'completed' ? '✓' : step.id}
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium">{step.title}</p>
+                    <p className="text-xs text-muted-foreground">{step.description}</p>
                   </div>
                 </div>
-              </div>
+                
+                {index < steps.length - 1 && (
+                  <div className="w-12 h-[1px] bg-border mx-2"></div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+          
+          {/* Content */}
+          <ScrollArea className="flex-1 px-6 py-6">
+            {currentStep === 1 && (
+              <PlatformSelector 
+                selectedPlatforms={selectedPlatforms}
+                onChange={handlePlatformChange}
+              />
             )}
-          </div>
-
-          <div className="px-4">
-            <CampaignPreview selectedPlatforms={selectedPlatforms} />
-          </div>
-        </div>
-
-        <DrawerFooter className="border-t">
-          <div className="flex justify-between w-full">
-            <Button
-              variant="outline"
+            
+            {currentStep === 2 && (
+              <CampaignForm 
+                formData={formData}
+                onChange={handleFormChange}
+              />
+            )}
+            
+            {currentStep === 3 && (
+              <CampaignPreview selectedPlatforms={selectedPlatforms} />
+            )}
+          </ScrollArea>
+          
+          {/* Footer */}
+          <div className="flex items-center justify-between px-6 py-4 border-t">
+            <Button 
+              variant="outline" 
               onClick={handleBack}
               disabled={currentStep === 1}
             >
               Back
             </Button>
-            <Button 
-              onClick={handleNext} 
-              disabled={(currentStep === 1 && selectedPlatforms.length === 0) || 
-                       (currentStep === 2 && (!campaignData.account || !campaignData.brand || !campaignData.outlet))}
-              className="bg-marketing-red hover:bg-marketing-red/90"
-            >
-              {currentStep < 3 ? 'Next' : 'Create Campaign'}
-            </Button>
+            
+            <div className="flex items-center gap-2">
+              {currentStep === steps.length ? (
+                <Button 
+                  className="bg-marketing-green hover:bg-marketing-green/90"
+                  // Fix for type error by using strict equality with string
+                  disabled={formData.budget === '' || parseFloat(formData.budget) <= 0}
+                >
+                  Launch Campaign
+                </Button>
+              ) : (
+                <Button 
+                  className="bg-marketing-red hover:bg-marketing-red/90"
+                  onClick={handleNext}
+                  disabled={isNextDisabled()}
+                >
+                  Continue
+                </Button>
+              )}
+            </div>
           </div>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -1,6 +1,7 @@
 
-import React from 'react';
-import { TrendingUp, TrendingDown, Clock, XCircle, DollarSign, AlertCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { TrendingUp, TrendingDown, Clock, XCircle, DollarSign, AlertCircle, Power, ChevronDown, ChevronUp } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface MetricItemProps {
   label: string;
@@ -40,6 +41,43 @@ const MetricItem: React.FC<MetricItemProps> = ({ label, value, trend, icon }) =>
   );
 };
 
+interface MetricSectionProps {
+  title: string;
+  icon: React.ReactNode;
+  iconColor: string;
+  metrics: MetricItemProps[];
+}
+
+const MetricSection: React.FC<MetricSectionProps> = ({ title, icon, iconColor, metrics }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  return (
+    <div className="space-y-1 border-b pb-2 last:border-b-0">
+      <button 
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between py-2 hover:bg-gray-50 rounded transition-colors"
+      >
+        <h4 className="text-sm font-semibold text-muted-foreground flex items-center">
+          <span className={iconColor}>{icon}</span>
+          <span className="ml-1">{title}</span>
+        </h4>
+        {isExpanded ? 
+          <ChevronUp className="w-4 h-4 text-muted-foreground" /> : 
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+        }
+      </button>
+      
+      {isExpanded && (
+        <div className="space-y-1 pl-5">
+          {metrics.map((metric, index) => (
+            <MetricItem key={`metric-${index}`} {...metric} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 interface PlatformMetricsCardProps {
   platform: string;
   logo: React.ReactNode;
@@ -71,39 +109,25 @@ const PlatformMetricsCard: React.FC<PlatformMetricsCardProps> = ({
   // Determine performance level based on score
   let performanceLevel = '';
   let ringColor = '';
-  let fillPercentage = 0;
   
   if (scorePercentage >= 95) {
     performanceLevel = 'Epic';
     ringColor = 'bg-marketing-green';
-    fillPercentage = 100;
   } else if (scorePercentage >= 85) {
     performanceLevel = 'Good';
-    ringColor = 'bg-marketing-blue';
-    fillPercentage = 75;
+    ringColor = 'bg-marketing-orange';
   } else if (scorePercentage >= 70) {
     performanceLevel = 'Average';
-    ringColor = 'bg-marketing-orange';
-    fillPercentage = 50;
+    ringColor = 'bg-marketing-blue';
   } else {
     performanceLevel = 'Poor';
     ringColor = 'bg-marketing-red';
-    fillPercentage = 25;
   }
 
-  // Calculate dimensions for half-donut chart
+  // Calculate dimensions for donut chart
   const size = 140; // Outer circle size
   const thickness = 16; // Donut thickness
-  const innerSize = size - (thickness * 2); // Inner circle size
   
-  // Calculate SVG parameters
-  const radius = size / 2;
-  const innerRadius = radius - thickness;
-  const circumference = Math.PI * radius; // Semi-circle circumference
-
-  // Calculate stroke dash based on fill percentage
-  const strokeDash = (circumference * fillPercentage) / 100;
-
   // Group metrics by category
   const rejectionMetrics = [
     metrics.itemSwitchedOff,
@@ -124,94 +148,85 @@ const PlatformMetricsCard: React.FC<PlatformMetricsCardProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 animate-hover-lift">
+    <div className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 animate-hover-lift h-full">
       <div className="flex items-center gap-2 mb-4">
         {logo}
         <h3 className="text-lg font-semibold">Operations on {platform}</h3>
       </div>
       
       <div className="flex items-start justify-between mb-6 mt-4">
-        <div className="relative h-36 w-36 flex justify-center">
-          {/* SVG for half-donut chart */}
-          <svg width={size} height={size/2 + 10} viewBox={`0 0 ${size} ${size/2 + 10}`} className="transform -rotate-90">
-            {/* Background semi-circle */}
-            <path 
-              d={`M ${thickness/2},${size/2} a ${radius - thickness/2},${radius - thickness/2} 0 1,1 ${size - thickness},0`} 
+        <div className="relative h-36 w-36 flex justify-center items-center">
+          {/* SVG for complete donut chart */}
+          <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+            {/* Background circle */}
+            <circle 
+              cx={size/2} 
+              cy={size/2} 
+              r={size/2 - thickness/2} 
               fill="none" 
               stroke="#e5e7eb" 
               strokeWidth={thickness} 
-              strokeLinecap="round"
             />
             
-            {/* Colored progress arc */}
-            <path 
-              d={`M ${thickness/2},${size/2} a ${radius - thickness/2},${radius - thickness/2} 0 1,1 ${size - thickness},0`} 
+            {/* Colored progress circle based on performance level */}
+            <circle 
+              cx={size/2} 
+              cy={size/2} 
+              r={size/2 - thickness/2} 
               fill="none" 
               stroke={ringColor.replace('bg-', 'var(--color-')} 
               className={ringColor.replace('bg-', 'stroke-')}
               strokeWidth={thickness} 
-              strokeDasharray={`${strokeDash} ${circumference}`}
-              strokeLinecap="round"
+              strokeDasharray={`${2 * Math.PI * (size/2 - thickness/2) * scorePercentage / 100} ${2 * Math.PI * (size/2 - thickness/2)}`}
+              strokeDashoffset="0"
+              transform={`rotate(-90 ${size/2} ${size/2})`}
             />
             
-            {/* Add text in the center */}
+            {/* Center text for score */}
             <text 
               x={size/2} 
-              y={size/2 + 35} 
+              y={size/2 - 10} 
               textAnchor="middle" 
               className="text-xl font-bold fill-current"
-              style={{ transform: 'rotate(90deg)', transformOrigin: 'center' }}
             >
               {performanceLevel}
             </text>
             <text 
               x={size/2} 
-              y={size/2 + 55} 
+              y={size/2 + 15} 
               textAnchor="middle" 
-              className="text-xs fill-muted-foreground"
-              style={{ transform: 'rotate(90deg)', transformOrigin: 'center' }}
+              className="text-sm fill-muted-foreground"
             >
               {score.current}/{score.total}
             </text>
           </svg>
         </div>
         
-        <div className="flex-1 ml-4 space-y-6">
-          <div className="space-y-1">
-            <h4 className="text-sm font-semibold text-muted-foreground flex items-center">
-              <XCircle className="w-4 h-4 mr-1 text-marketing-red" />
-              Rejection Metrics
-            </h4>
-            <div className="space-y-1">
-              {rejectionMetrics.map((metric, index) => (
-                <MetricItem key={`rejection-${index}`} {...metric} />
-              ))}
+        <div className="flex-1 ml-4 max-h-[300px]">
+          <ScrollArea className="h-[300px] pr-3">
+            <div className="space-y-2">
+              <MetricSection 
+                title="Rejection Metrics" 
+                icon={<XCircle className="w-4 h-4 mr-1" />} 
+                iconColor="text-marketing-red"
+                metrics={rejectionMetrics}
+              />
+              
+              <MetricSection 
+                title="Cancellation Metrics" 
+                icon={<AlertCircle className="w-4 h-4 mr-1" />} 
+                iconColor="text-marketing-orange"
+                metrics={cancellationMetrics}
+              />
+              
+              <MetricSection 
+                title="Time Metrics" 
+                icon={<Clock className="w-4 h-4 mr-1" />} 
+                iconColor="text-marketing-blue"
+                metrics={timeMetrics}
+              />
             </div>
-          </div>
-          
-          <div className="space-y-1">
-            <h4 className="text-sm font-semibold text-muted-foreground flex items-center">
-              <AlertCircle className="w-4 h-4 mr-1 text-marketing-orange" />
-              Cancellation Metrics
-            </h4>
-            <div className="space-y-1">
-              {cancellationMetrics.map((metric, index) => (
-                <MetricItem key={`cancellation-${index}`} {...metric} />
-              ))}
-            </div>
-          </div>
-          
-          <div className="space-y-1">
-            <h4 className="text-sm font-semibold text-muted-foreground flex items-center">
-              <Clock className="w-4 h-4 mr-1 text-marketing-blue" />
-              Time Metrics
-            </h4>
-            <div className="space-y-1">
-              {timeMetrics.map((metric, index) => (
-                <MetricItem key={`time-${index}`} {...metric} />
-              ))}
-            </div>
-          </div>
+          </ScrollArea>
         </div>
       </div>
     </div>
