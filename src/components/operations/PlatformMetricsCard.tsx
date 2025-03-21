@@ -15,12 +15,12 @@ interface MetricItemProps {
 
 const MetricItem: React.FC<MetricItemProps> = ({ label, value, trend }) => {
   return (
-    <div className="flex items-center justify-between py-1.5">
+    <div className="flex items-center justify-between py-1">
       <div className="flex items-center">
         <span className="text-sm font-medium text-muted-foreground">{label}</span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-sm font-bold text-right w-16">{value}</span>
+        <span className="text-sm font-bold text-right w-16 text-end">{value}</span>
         <div className={`flex items-center text-xs px-2 py-0.5 rounded-full ${
           trend.direction === 'up' 
             ? 'bg-green-100 text-green-700' 
@@ -51,10 +51,10 @@ const MetricSection: React.FC<MetricSectionProps> = ({ title, icon, iconColor, m
   const [isExpanded, setIsExpanded] = useState(false);
   
   return (
-    <div className="space-y-0.5 border-b last:border-b-0 pb-1">
+    <div className="border-b last:border-b-0">
       <button 
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between py-1.5 hover:bg-gray-50 rounded transition-colors"
+        className="w-full flex items-center justify-between py-2 hover:bg-gray-50 rounded transition-colors"
       >
         <h4 className="text-sm font-semibold text-muted-foreground flex items-center">
           <span className={iconColor}>{icon}</span>
@@ -67,7 +67,7 @@ const MetricSection: React.FC<MetricSectionProps> = ({ title, icon, iconColor, m
       </button>
       
       {isExpanded && (
-        <div className="space-y-0.5 pl-5">
+        <div className="space-y-0.5 pl-5 pb-2">
           {metrics.map((metric, index) => (
             <MetricItem key={`metric-${index}`} {...metric} />
           ))}
@@ -124,8 +124,8 @@ const PlatformMetricsCard: React.FC<PlatformMetricsCardProps> = ({
   }
 
   // Calculate dimensions for donut chart
-  const size = 140; // Outer circle size
-  const thickness = 16; // Donut thickness
+  const size = 120; // Outer circle size
+  const thickness = 14; // Donut thickness
   
   // Group metrics by category
   const rejectionMetrics = [
@@ -147,14 +147,14 @@ const PlatformMetricsCard: React.FC<PlatformMetricsCardProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 animate-hover-lift h-full">
-      <div className="flex items-center gap-2 mb-3">
+    <div className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-300 animate-hover-lift h-full">
+      <div className="flex items-center gap-2 mb-2">
         {logo}
         <h3 className="text-lg font-semibold">Operations on {platform}</h3>
       </div>
       
-      <div className="flex items-start justify-between mb-4 mt-3">
-        <div className="relative h-36 w-36 flex justify-center items-center">
+      <div className="flex items-start justify-between mb-3">
+        <div className="relative flex justify-center items-center">
           {/* SVG for complete donut chart */}
           <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
             {/* Background circle */}
@@ -175,7 +175,7 @@ const PlatformMetricsCard: React.FC<PlatformMetricsCardProps> = ({
               fill="none" 
               stroke={ringColor}
               strokeWidth={thickness} 
-              strokeDasharray={`${2 * Math.PI * (size/2 - thickness/2) * (scorePercentage / 100)} ${2 * Math.PI * (size/2 - thickness/2)}`}
+              strokeDasharray={`${2 * Math.PI * (size/2 - thickness/2)} ${2 * Math.PI * (size/2 - thickness/2) * 0.001}`}
               strokeDashoffset="0"
               transform={`rotate(-90 ${size/2} ${size/2})`}
             />
@@ -183,7 +183,7 @@ const PlatformMetricsCard: React.FC<PlatformMetricsCardProps> = ({
             {/* Center text for score */}
             <text 
               x={size/2} 
-              y={size/2 - 10} 
+              y={size/2 - 8} 
               textAnchor="middle" 
               className="text-xl font-bold fill-current"
             >
@@ -200,9 +200,9 @@ const PlatformMetricsCard: React.FC<PlatformMetricsCardProps> = ({
           </svg>
         </div>
         
-        <div className="flex-1 ml-3 max-h-[250px]">
-          <ScrollArea className="h-[250px] pr-3">
-            <div className="space-y-1">
+        <div className="flex-1 ml-3 max-h-[200px] min-h-[200px]">
+          <ScrollArea className="h-full pr-3">
+            <div>
               <MetricSection 
                 title="Rejection Metrics" 
                 icon={<div className="w-1 h-4 bg-red-500 rounded-full mr-2"></div>} 
