@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PlatformMetricsCard from './PlatformMetricsCard';
@@ -6,7 +7,9 @@ import {
   Clock, 
   XCircle, 
   ClipboardList, 
-  AlertCircle
+  AlertCircle,
+  DollarSign,
+  Power
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -36,126 +39,242 @@ const platformsData = {
     logo: <TalabatLogo />,
     score: { current: 16, total: 16 },
     metrics: {
-      orderDelay: {
-        label: 'Order Delay',
-        value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' as const }
-      },
-      cancelledOrder: {
-        label: 'Cancelled Order',
-        value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' as const }
-      },
-      avgPrepTime: {
-        label: 'Avg Prep Time',
-        value: 'N/A',
-        trend: { value: 'N/A', direction: 'neutral' as const }
+      itemSwitchedOff: {
+        label: 'Item Switched Off',
+        value: '0%',
+        trend: { value: '0.0%', direction: 'neutral' as const },
+        icon: <Power className="w-3 h-3" />
       },
       rejectedOrder: {
         label: 'Rejected Order',
         value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' as const }
+        trend: { value: '0.0%', direction: 'neutral' as const },
+        icon: <XCircle className="w-3 h-3" />
       },
-      inaccurateOrder: {
-        label: 'Inaccurate Order',
+      rejectedAmount: {
+        label: 'Rejected Amount',
+        value: 'AED 0',
+        trend: { value: '0.0%', direction: 'neutral' as const },
+        icon: <DollarSign className="w-3 h-3" />
+      },
+      platformCancelled: {
+        label: 'Platform Cancelled',
         value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' as const }
+        trend: { value: '0.0%', direction: 'neutral' as const },
+        icon: <AlertCircle className="w-3 h-3" />
+      },
+      cancelledAmount: {
+        label: 'Cancelled Amount',
+        value: 'AED 0',
+        trend: { value: '0.0%', direction: 'neutral' as const },
+        icon: <DollarSign className="w-3 h-3" />
+      },
+      acceptanceTime: {
+        label: 'Acceptance Time',
+        value: '1.2 mins',
+        trend: { value: '-0.2%', direction: 'down' as const },
+        icon: <Clock className="w-3 h-3" />
+      },
+      avgPrepTime: {
+        label: 'Avg Prep Time',
+        value: '10.5 mins',
+        trend: { value: '-1.2%', direction: 'down' as const },
+        icon: <Clock className="w-3 h-3" />
+      },
+      avgDeliveryTime: {
+        label: 'Avg Delivery Time',
+        value: '22.3 mins',
+        trend: { value: '-0.8%', direction: 'down' as const },
+        icon: <Clock className="w-3 h-3" />
+      },
+      orderDelay: {
+        label: 'Order Delay',
+        value: '0.00%',
+        trend: { value: '0.0%', direction: 'neutral' as const },
+        icon: <Clock className="w-3 h-3" />
       }
     }
   },
   noon: {
     platform: 'Noon',
     logo: <NoonLogo />,
-    score: { current: 16, total: 16 },
+    score: { current: 15, total: 16 },
     metrics: {
-      orderDelay: {
-        label: 'Order Delay',
-        value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' as const }
-      },
-      cancelledOrder: {
-        label: 'Cancelled Order',
-        value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' as const }
-      },
-      avgPrepTime: {
-        label: 'Avg Prep Time',
-        value: 'N/A',
-        trend: { value: '0.0%', direction: 'neutral' as const }
+      itemSwitchedOff: {
+        label: 'Item Switched Off',
+        value: '2%',
+        trend: { value: '+0.5%', direction: 'up' as const },
+        icon: <Power className="w-3 h-3" />
       },
       rejectedOrder: {
         label: 'Rejected Order',
-        value: '0.00%',
-        trend: { value: '-0.9%', direction: 'down' as const }
+        value: '0.90%',
+        trend: { value: '-0.1%', direction: 'down' as const },
+        icon: <XCircle className="w-3 h-3" />
       },
-      inaccurateOrder: {
-        label: 'Inaccurate Order',
-        value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' as const }
+      rejectedAmount: {
+        label: 'Rejected Amount',
+        value: 'AED 240',
+        trend: { value: '-0.3%', direction: 'down' as const },
+        icon: <DollarSign className="w-3 h-3" />
+      },
+      platformCancelled: {
+        label: 'Platform Cancelled',
+        value: '0.20%',
+        trend: { value: '+0.1%', direction: 'up' as const },
+        icon: <AlertCircle className="w-3 h-3" />
+      },
+      cancelledAmount: {
+        label: 'Cancelled Amount',
+        value: 'AED 75',
+        trend: { value: '+0.4%', direction: 'up' as const },
+        icon: <DollarSign className="w-3 h-3" />
+      },
+      acceptanceTime: {
+        label: 'Acceptance Time',
+        value: '1.5 mins',
+        trend: { value: '+0.1%', direction: 'up' as const },
+        icon: <Clock className="w-3 h-3" />
+      },
+      avgPrepTime: {
+        label: 'Avg Prep Time',
+        value: '11.2 mins',
+        trend: { value: '+0.4%', direction: 'up' as const },
+        icon: <Clock className="w-3 h-3" />
+      },
+      avgDeliveryTime: {
+        label: 'Avg Delivery Time',
+        value: '21.8 mins',
+        trend: { value: '-0.5%', direction: 'down' as const },
+        icon: <Clock className="w-3 h-3" />
+      },
+      orderDelay: {
+        label: 'Order Delay',
+        value: '0.10%',
+        trend: { value: '+0.1%', direction: 'up' as const },
+        icon: <Clock className="w-3 h-3" />
       }
     }
   },
   careem: {
     platform: 'Careem',
     logo: <CareemLogo />,
-    score: { current: 15, total: 16 },
+    score: { current: 14, total: 16 },
     metrics: {
-      orderDelay: {
-        label: 'Order Delay',
-        value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' as const }
+      itemSwitchedOff: {
+        label: 'Item Switched Off',
+        value: '1%',
+        trend: { value: '-0.2%', direction: 'down' as const },
+        icon: <Power className="w-3 h-3" />
       },
-      cancelledOrder: {
-        label: 'Cancelled Order',
+      rejectedOrder: {
+        label: 'Rejected Order',
+        value: '0.50%',
+        trend: { value: '+0.2%', direction: 'up' as const },
+        icon: <XCircle className="w-3 h-3" />
+      },
+      rejectedAmount: {
+        label: 'Rejected Amount',
+        value: 'AED 145',
+        trend: { value: '+0.5%', direction: 'up' as const },
+        icon: <DollarSign className="w-3 h-3" />
+      },
+      platformCancelled: {
+        label: 'Platform Cancelled',
         value: '2.00%',
-        trend: { value: '2.0%', direction: 'up' as const }
+        trend: { value: '+0.8%', direction: 'up' as const },
+        icon: <AlertCircle className="w-3 h-3" />
+      },
+      cancelledAmount: {
+        label: 'Cancelled Amount',
+        value: 'AED 320',
+        trend: { value: '+0.9%', direction: 'up' as const },
+        icon: <DollarSign className="w-3 h-3" />
+      },
+      acceptanceTime: {
+        label: 'Acceptance Time',
+        value: '1.8 mins',
+        trend: { value: '+0.3%', direction: 'up' as const },
+        icon: <Clock className="w-3 h-3" />
       },
       avgPrepTime: {
         label: 'Avg Prep Time',
         value: '12.34 mins',
-        trend: { value: '2.64%', direction: 'up' as const }
+        trend: { value: '+2.64%', direction: 'up' as const },
+        icon: <Clock className="w-3 h-3" />
       },
-      rejectedOrder: {
-        label: 'Rejected Order',
-        value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' as const }
+      avgDeliveryTime: {
+        label: 'Avg Delivery Time',
+        value: '25.6 mins',
+        trend: { value: '+1.2%', direction: 'up' as const },
+        icon: <Clock className="w-3 h-3" />
       },
-      inaccurateOrder: {
-        label: 'Inaccurate Order',
-        value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' as const }
+      orderDelay: {
+        label: 'Order Delay',
+        value: '0.20%',
+        trend: { value: '+0.1%', direction: 'up' as const },
+        icon: <Clock className="w-3 h-3" />
       }
     }
   },
   deliveroo: {
     platform: 'Deliveroo',
     logo: <DeliverooLogo />,
-    score: { current: 16, total: 16 },
+    score: { current: 15, total: 16 },
     metrics: {
-      orderDelay: {
-        label: 'Order Delay',
-        value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' as const }
-      },
-      cancelledOrder: {
-        label: 'Cancelled Order',
-        value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' as const }
-      },
-      avgPrepTime: {
-        label: 'Avg Prep Time',
-        value: 'N/A',
-        trend: { value: '0.0%', direction: 'neutral' as const }
+      itemSwitchedOff: {
+        label: 'Item Switched Off',
+        value: '0.5%',
+        trend: { value: '-0.1%', direction: 'down' as const },
+        icon: <Power className="w-3 h-3" />
       },
       rejectedOrder: {
         label: 'Rejected Order',
-        value: '0.00%',
-        trend: { value: '-0.9%', direction: 'down' as const }
+        value: '0.10%',
+        trend: { value: '-0.4%', direction: 'down' as const },
+        icon: <XCircle className="w-3 h-3" />
       },
-      inaccurateOrder: {
-        label: 'Inaccurate Order',
-        value: '0.00%',
-        trend: { value: '0.0%', direction: 'neutral' as const }
+      rejectedAmount: {
+        label: 'Rejected Amount',
+        value: 'AED 32',
+        trend: { value: '-0.6%', direction: 'down' as const },
+        icon: <DollarSign className="w-3 h-3" />
+      },
+      platformCancelled: {
+        label: 'Platform Cancelled',
+        value: '0.40%',
+        trend: { value: '+0.2%', direction: 'up' as const },
+        icon: <AlertCircle className="w-3 h-3" />
+      },
+      cancelledAmount: {
+        label: 'Cancelled Amount',
+        value: 'AED 85',
+        trend: { value: '+0.3%', direction: 'up' as const },
+        icon: <DollarSign className="w-3 h-3" />
+      },
+      acceptanceTime: {
+        label: 'Acceptance Time',
+        value: '1.6 mins',
+        trend: { value: '+0.2%', direction: 'up' as const },
+        icon: <Clock className="w-3 h-3" />
+      },
+      avgPrepTime: {
+        label: 'Avg Prep Time',
+        value: '10.9 mins',
+        trend: { value: '-0.3%', direction: 'down' as const },
+        icon: <Clock className="w-3 h-3" />
+      },
+      avgDeliveryTime: {
+        label: 'Avg Delivery Time',
+        value: '23.1 mins',
+        trend: { value: '+0.4%', direction: 'up' as const },
+        icon: <Clock className="w-3 h-3" />
+      },
+      orderDelay: {
+        label: 'Order Delay',
+        value: '0.05%',
+        trend: { value: '-0.02%', direction: 'down' as const },
+        icon: <Clock className="w-3 h-3" />
       }
     }
   }
