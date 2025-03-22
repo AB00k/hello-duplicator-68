@@ -165,7 +165,7 @@ const CreateCampaignDrawer: React.FC<CreateCampaignDrawerProps> = ({ isOpen, onC
             
             {currentStep === 2 && (
               <CampaignForm 
-                formData={formData}
+                data={formData}
                 onChange={handleCampaignFormChange}
               />
             )}
@@ -185,7 +185,7 @@ const CreateCampaignDrawer: React.FC<CreateCampaignDrawerProps> = ({ isOpen, onC
             </Button>
             
             <div className="flex items-center gap-2">
-              {currentStep === steps.length ? (
+              {currentStep === 3 ? (
                 <Button 
                   className="bg-marketing-green hover:bg-marketing-green/90"
                   disabled={formData.budget === '' || parseFloat(formData.budget) <= 0}

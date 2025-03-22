@@ -124,8 +124,8 @@ const PlatformMetricsCard: React.FC<PlatformMetricsCardProps> = ({
   }
 
   // Calculate dimensions for donut chart
-  const size = 120; // Outer circle size
-  const thickness = 14; // Donut thickness
+  const size = 100; // Reduced outer circle size for better fit
+  const thickness = 12; // Adjusted donut thickness
   
   // Group metrics by category
   const rejectionMetrics = [
@@ -148,13 +148,13 @@ const PlatformMetricsCard: React.FC<PlatformMetricsCardProps> = ({
 
   return (
     <div className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-300 animate-hover-lift h-full">
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-3">
         {logo}
         <h3 className="text-lg font-semibold">Operations on {platform}</h3>
       </div>
       
-      <div className="flex items-start justify-between mb-4">
-        <div className="relative flex justify-center items-center py-2">
+      <div className="flex items-start justify-between">
+        <div className="relative flex justify-center items-center py-4 mt-2 mb-4">
           {/* SVG for complete donut chart */}
           <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
             {/* Background circle */}
@@ -200,7 +200,7 @@ const PlatformMetricsCard: React.FC<PlatformMetricsCardProps> = ({
           </svg>
         </div>
         
-        <div className="flex-1 ml-3 max-h-[200px] min-h-[200px]">
+        <div className="flex-1 ml-3 max-h-[180px] min-h-[180px] overflow-hidden">
           <ScrollArea className="h-full pr-3">
             <div>
               <MetricSection 

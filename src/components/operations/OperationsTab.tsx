@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PlatformMetricsCard from './PlatformMetricsCard';
@@ -14,6 +13,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import MetricCard from '@/components/MetricCard';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Platform Logos
 const TalabatLogo = () => (
@@ -280,7 +280,7 @@ const platformsData = {
   }
 };
 
-// Recent alerts data
+// Recent alerts data - expanded with more items
 const recentAlerts = [
   { 
     id: 1, 
@@ -305,6 +305,30 @@ const recentAlerts = [
     time: '5 hours ago', 
     location: 'JBR Branch',
     status: 'Resolved'
+  },
+  { 
+    id: 4, 
+    platform: 'Deliveroo', 
+    issue: 'Item Switched Off', 
+    time: '6 hours ago', 
+    location: 'Business Bay Branch',
+    status: 'Active'
+  },
+  { 
+    id: 5, 
+    platform: 'Talabat', 
+    issue: 'Cancelled Order', 
+    time: '8 hours ago', 
+    location: 'Dubai Marina Branch',
+    status: 'Resolved'
+  },
+  { 
+    id: 6, 
+    platform: 'Careem', 
+    issue: 'Delivery Delay', 
+    time: '10 hours ago', 
+    location: 'JBR Branch',
+    status: 'Active'
   }
 ];
 
@@ -390,38 +414,40 @@ const OperationsTab = () => {
         <h2 className="text-2xl font-semibold mb-6">Recent Alerts</h2>
         <Card className="bg-white shadow-sm hover:shadow-md transition-all">
           <CardContent className="pt-6">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Platform</TableHead>
-                    <TableHead>Issue</TableHead>
-                    <TableHead>Location</TableHead>
-                    <TableHead>Time</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recentAlerts.map(alert => (
-                    <TableRow key={alert.id}>
-                      <TableCell className="font-medium">{alert.platform}</TableCell>
-                      <TableCell>{alert.issue}</TableCell>
-                      <TableCell>{alert.location}</TableCell>
-                      <TableCell className="text-muted-foreground">{alert.time}</TableCell>
-                      <TableCell>
-                        <span className={`px-2 py-1 text-xs rounded-full ${
-                          alert.status === 'Active' 
-                            ? 'bg-red-100 text-red-700' 
-                            : 'bg-green-100 text-green-700'
-                        }`}>
-                          {alert.status}
-                        </span>
-                      </TableCell>
+            <ScrollArea className="h-[300px]">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Platform</TableHead>
+                      <TableHead>Issue</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead>Time</TableHead>
+                      <TableHead>Status</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {recentAlerts.map(alert => (
+                      <TableRow key={alert.id}>
+                        <TableCell className="font-medium">{alert.platform}</TableCell>
+                        <TableCell>{alert.issue}</TableCell>
+                        <TableCell>{alert.location}</TableCell>
+                        <TableCell className="text-muted-foreground">{alert.time}</TableCell>
+                        <TableCell>
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            alert.status === 'Active' 
+                              ? 'bg-red-100 text-red-700' 
+                              : 'bg-green-100 text-green-700'
+                          }`}>
+                            {alert.status}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </ScrollArea>
           </CardContent>
         </Card>
       </div>
@@ -450,3 +476,4 @@ const OperationsTab = () => {
 };
 
 export default OperationsTab;
+
