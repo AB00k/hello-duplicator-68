@@ -8,14 +8,16 @@ import {
   ClipboardList, 
   AlertCircle,
   DollarSign,
-  Power
+  Power,
+  ChevronDown
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import MetricCard from '@/components/MetricCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from 'sonner';
 
-// Platform Logos
 const TalabatLogo = () => (
   <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white">T</div>
 );
@@ -32,7 +34,6 @@ const DeliverooLogo = () => (
   <div className="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-white">D</div>
 );
 
-// Platform metrics data
 const platformsData = {
   talabat: {
     platform: 'Talabat',
@@ -280,7 +281,6 @@ const platformsData = {
   }
 };
 
-// Recent alerts data - expanded with more items
 const recentAlerts = [
   { 
     id: 1, 
@@ -332,7 +332,6 @@ const recentAlerts = [
   }
 ];
 
-// Performance by location data
 const locationPerformance = [
   { location: 'Dubai Marina', score: 95 },
   { location: 'Downtown Dubai', score: 92 },
@@ -342,10 +341,18 @@ const locationPerformance = [
 
 const OperationsTab = () => {
   const [timeframe, setTimeframe] = useState('today');
+  const [alerts, setAlerts] = useState(recentAlerts);
+
+  const handleStatusChange = (id: number, newStatus: string) => {
+    const updatedAlerts = alerts.map(alert => 
+      alert.id === id ? { ...alert, status: newStatus } : alert
+    );
+    setAlerts(updatedAlerts);
+    toast.success(`Alert #${id} status updated to ${newStatus}`);
+  };
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Operations Header */}
       <div className="flex justify-between items-center mb-8 animate-fade-up" style={{ animationDelay: '100ms' }}>
         <h1 className="text-3xl font-bold text-marketing-red">Operations Performance</h1>
         
@@ -359,7 +366,6 @@ const OperationsTab = () => {
         </Tabs>
       </div>
       
-      {/* Performance Overview - Using same MetricCard component as Marketing tab */}
       <div className="mb-12 animate-fade-up" style={{ animationDelay: '200ms' }}>
         <h2 className="text-2xl font-semibold mb-6">Performance Overview</h2>
         
@@ -398,7 +404,6 @@ const OperationsTab = () => {
         </div>
       </div>
       
-      {/* Platform Performance Overview */}
       <div className="animate-fade-up" style={{ animationDelay: '300ms' }}>
         <h2 className="text-2xl font-semibold mb-6">Platform Performance</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -409,7 +414,6 @@ const OperationsTab = () => {
         </div>
       </div>
       
-      {/* Recent Alerts */}
       <div className="animate-fade-up" style={{ animationDelay: '400ms' }}>
         <h2 className="text-2xl font-semibold mb-6">Recent Alerts</h2>
         <Card className="bg-white shadow-sm hover:shadow-md transition-all">
@@ -427,20 +431,30 @@ const OperationsTab = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {recentAlerts.map(alert => (
+                    {alerts.map(alert => (
                       <TableRow key={alert.id}>
                         <TableCell className="font-medium">{alert.platform}</TableCell>
                         <TableCell>{alert.issue}</TableCell>
                         <TableCell>{alert.location}</TableCell>
                         <TableCell className="text-muted-foreground">{alert.time}</TableCell>
                         <TableCell>
-                          <span className={`px-2 py-1 text-xs rounded-full ${
-                            alert.status === 'Active' 
-                              ? 'bg-red-100 text-red-700' 
-                              : 'bg-green-100 text-green-700'
-                          }`}>
-                            {alert.status}
-                          </span>
+                          <Select
+                            defaultValue={alert.status}
+                            onValueChange={(value) => handleStatusChange(alert.id, value)}
+                          >
+                            <SelectTrigger className={`w-28 h-8 px-2 text-xs ${
+                              alert.status === 'Active' ? 'bg-red-100 text-red-700' : 
+                              alert.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : 
+                              'bg-green-100 text-green-700'
+                            }`}>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Active">Active</SelectItem>
+                              <SelectItem value="Pending">Pending</SelectItem>
+                              <SelectItem value="Resolved">Resolved</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -452,7 +466,6 @@ const OperationsTab = () => {
         </Card>
       </div>
       
-      {/* Performance by Location */}
       <div className="animate-fade-up" style={{ animationDelay: '500ms' }}>
         <h2 className="text-2xl font-semibold mb-6">Performance by Location</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -476,4 +489,3 @@ const OperationsTab = () => {
 };
 
 export default OperationsTab;
-
